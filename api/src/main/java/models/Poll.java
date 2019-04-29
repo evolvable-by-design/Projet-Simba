@@ -55,7 +55,7 @@ public class Poll implements Serializable {
     @Column(name="listUsers", updatable = false, nullable = false)
     private List<User> listUsers;
     @ManyToOne
-    @Column(name="admin", updatable = false, nullable = false)
+    @Column(name="admin", updatable = false, nullable = false)	
     private User admin;
     @Column(name="comments", updatable = true, nullable = true)
     @OneToMany(mappedBy = "poll")
