@@ -20,8 +20,15 @@ public class Comment implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date created_at;
 
+    @ManyToOne
+    private User user;
+    @ManyToOne
+    private Poll poll;
+    
+    
     public Comment(String text, Date created_at) {
         this.text = text;
         this.created_at = created_at;
+        //poll = new Poll();
     }
 }

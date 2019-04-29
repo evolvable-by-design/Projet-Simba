@@ -1,10 +1,24 @@
 package models;
 
-import lombok.*;
-
-import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -21,14 +35,27 @@ public class User implements Serializable {
     private String first_name;
     private String last_name;
     private String email;
+    
     @Temporal(TemporalType.TIMESTAMP)
     private Date created_at;
+    
     @Temporal(TemporalType.TIMESTAMP)
     private Date updated_at;
     private boolean is_temp;
-    private String preference;
+    
+    @OneToOne
+    private MealPreference meal_preference;
+   
+    
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
+   
+    @ManyToMany
+    private List<Poll> listPolls;
+    @OneToMany(mappedBy = "user")
+    private List<Choice> choices;
 
-    public User(String username, String password, String first_name, String last_name, String email, Date created_at, Date updated_at, boolean is_temp, String preference) {
+    public User(String username, String password, String first_name, String last_name, String email, Date created_at, Date updated_at, boolean is_temp, MealPreference preference) {
         this.username = username;
         this.password = password;
         this.first_name = first_name;
@@ -37,6 +64,8 @@ public class User implements Serializable {
         this.created_at = created_at;
         this.updated_at = updated_at;
         this.is_temp = is_temp;
-        this.preference = preference;
+        this.meal_preference = preference;
+        listPolls = new ArrayList<Poll>();
+        comments = new ArrayList<Comment>();
     }
 }
