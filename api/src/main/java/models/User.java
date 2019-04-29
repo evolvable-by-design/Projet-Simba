@@ -62,7 +62,7 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "user")
     private List<Choice> choices;
 
-    public User(String username, String password, String first_name, String last_name, String email, Date created_at, Date updated_at, boolean is_temp, MealPreference preference) {
+    public User(String username, String password, String first_name, String last_name, String email, boolean is_temp, MealPreference preference) {
 
         this.username = username;
         this.password = password;

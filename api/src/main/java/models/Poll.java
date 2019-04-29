@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -31,9 +33,11 @@ public class Poll implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
-    private long id;    
+    private long id;  
+    
     @Column(name = "slug", updatable = false, nullable = false)
     private String slug;
+    
     @Column(name = "title", updatable = true, nullable = false)
     private String title;
     
@@ -57,23 +61,30 @@ public class Poll implements Serializable {
     @ManyToMany(mappedBy="listPolls")
     @Column(name="listUsers", updatable = false, nullable = false)
     private List<User> listUsers;
+    
     @ManyToOne
+    @JoinColumn(name="user_id")
     private User admin;
+    
     @Column(name="comments", updatable = true, nullable = true)
     @OneToMany(mappedBy = "poll")
     private List<Comment> comments;
+    
     @Column(name="choices", updatable = true, nullable = false)
     @OneToMany(mappedBy = "poll")
     private List<Choice> choices;
 
-    public Poll(String title, String location, String description, boolean has_meal, PollType type, Date created_at) {
+    public Poll(String title, String location, String description, boolean has_meal, PollType type) {
         this.slug = Utils.generateSlug(24);
         this.title = title;
         this.location = location;
         this.description = description;
         this.has_meal = has_meal;
         this.type = type;
-        this.created_at = created_at;
+        this.created_at = new Date();
+        choices = new ArrayList<Choice>();
+        comments = new ArrayList<Comment>();
+        listUsers = new ArrayList<User>();
     }
 }
 
