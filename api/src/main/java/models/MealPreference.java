@@ -17,7 +17,10 @@ public class MealPreference implements Serializable {
     private long id;
     @Column(name="text", updatable = true, nullable = false)
     private String text;
-
+    
+    @OneToOne(mappedBy = "meal_preference")
+    private User user;
+    
     public MealPreference(String text) {
         this.text = text;
     }

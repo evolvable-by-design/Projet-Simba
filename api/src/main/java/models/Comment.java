@@ -22,8 +22,14 @@ public class Comment implements Serializable {
     @Column(name = "created_at", updatable = false, nullable = false)
     private Date created_at;
 
-    public Comment(String text) {
+    @ManyToOne
+    private User user;
+    @ManyToOne
+    private Poll poll;
+  
+      public Comment(String text) {
         this.text = text;
         this.created_at = new Date();
+
     }
 }

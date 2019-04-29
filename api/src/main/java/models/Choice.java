@@ -25,6 +25,12 @@ public class Choice implements Serializable {
     private Date end_date;
     private int votes_limit;
 
+    @ManyToOne
+    private Poll poll;
+    
+    @ManyToOne
+    private User user;
+    
     public Choice(String name, boolean full_day, Date start_date, Date end_date, int votes_limit) {
         this.name = name;
         this.full_day = full_day;
