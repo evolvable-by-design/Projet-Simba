@@ -15,6 +15,7 @@ public class MealPreference implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private long id;
+    @Column(name="text", updatable = true, nullable = false)
     private String text;
     
     @OneToOne(mappedBy = "meal_preference")

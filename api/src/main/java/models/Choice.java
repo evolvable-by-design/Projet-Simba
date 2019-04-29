@@ -19,9 +19,9 @@ public class Choice implements Serializable {
     private long id;
     private String name;
     private boolean full_day;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date start_date;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date end_date;
     private int votes_limit;
 
