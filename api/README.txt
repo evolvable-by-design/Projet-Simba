@@ -1,4 +1,10 @@
-To generate the native executable : 
+! All these commands must be done in the api folder !
+
+To generate target folder :
+
+    mvn install
+
+To generate the native executable :
 
     mvnw package -Pnative -Dnative-image.docker-build=true
         or 
