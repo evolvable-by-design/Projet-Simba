@@ -24,7 +24,7 @@ public class Poll implements Serializable {
     private boolean has_meal;
     @Enumerated(EnumType.STRING)
     private PollType type;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date created_at;
 
     public Poll(String title, String location, String description, boolean has_meal, PollType type, Date created_at) {
