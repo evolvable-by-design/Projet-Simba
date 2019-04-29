@@ -30,11 +30,12 @@ public class Choice implements Serializable {
     private Date end_date;
     @Column(name = "votes_limit", updatable = false, nullable = false)
     private int votes_limit;
-    @Column(name = "poll", updatable = false, nullable = false)
     @ManyToOne
+    @JoinColumn(name="poll_id")
     private Poll poll;
-    @Column(name = "user", updatable = false, nullable = false)
+    
     @ManyToOne
+    @JoinColumn(name="user_id")
     private User user;
     
     public Choice(String name, boolean full_day, Date start_date, Date end_date, int votes_limit) {

@@ -36,11 +36,14 @@ public class Poll implements Serializable {
     private String slug;
     @Column(name = "title", updatable = true, nullable = false)
     private String title;
+    
     @Column(name = "location", updatable = true, nullable = true)
     private String location;
+    
     @Column(name="description", updatable = true, nullable = true)
     private String description;
-    @Column(name="description", updatable = true, nullable = false)
+    
+    @Column(name="has_meal", updatable = true, nullable = false)
     private boolean has_meal;
     
     @Enumerated(EnumType.STRING)
@@ -55,7 +58,6 @@ public class Poll implements Serializable {
     @Column(name="listUsers", updatable = false, nullable = false)
     private List<User> listUsers;
     @ManyToOne
-    @Column(name="admin", updatable = false, nullable = false)	
     private User admin;
     @Column(name="comments", updatable = true, nullable = true)
     @OneToMany(mappedBy = "poll")
