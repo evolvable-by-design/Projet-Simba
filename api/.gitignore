@@ -2,6 +2,7 @@
 # Edit at https://www.gitignore.io/?templates=maven
 
 ### Maven ###
+.idea/
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -12,7 +13,6 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
-.idea/
 *.iml
 
 # End of https://www.gitignore.io/api/maven
