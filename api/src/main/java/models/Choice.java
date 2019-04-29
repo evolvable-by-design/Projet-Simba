@@ -23,10 +23,10 @@ public class Choice implements Serializable {
     private boolean full_day;
     
     @Column(name = "start_date", updatable = false, nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date start_date;
     @Column(name = "end_date", updatable = false, nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
     private Date end_date;
     @Column(name = "votes_limit", updatable = false, nullable = false)
     private int votes_limit;

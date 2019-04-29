@@ -46,8 +46,8 @@ public class Poll implements Serializable {
     @Enumerated(EnumType.STRING)
     @Column(name="type", updatable = false, nullable = false)
     private PollType type;
-    
-    @Temporal(TemporalType.TIMESTAMP)
+
+    @Temporal(TemporalType.DATE)
     @Column(name="created_at", updatable = false, nullable = false)
     private Date created_at;
     

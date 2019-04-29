@@ -16,19 +16,20 @@ public class Comment implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     private long id;
+    @Column(name = "text", updatable = true, nullable = true)
     private String text;
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.DATE)
+    @Column(name = "created_at", updatable = false, nullable = false)
     private Date created_at;
 
     @ManyToOne
     private User user;
     @ManyToOne
     private Poll poll;
-    
-    
-    public Comment(String text, Date created_at) {
+  
+      public Comment(String text) {
         this.text = text;
-        this.created_at = created_at;
-        //poll = new Poll();
+        this.created_at = new Date();
+
     }
 }
