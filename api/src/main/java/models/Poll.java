@@ -19,21 +19,17 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import utils.Utils;
 
 @Entity
-@Data
-@ToString
-@NoArgsConstructor
-public class Poll implements Serializable {
+
+public class Poll extends PanacheEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
-    private long id;  
+    private Long id;  
     
     @Column(name = "slug", updatable = false, nullable = false)
     private String slug;
@@ -72,9 +68,10 @@ public class Poll implements Serializable {
     
     @Column(name="choices", updatable = true, nullable = false)
     @OneToMany(mappedBy = "poll")
-    private List<Choice> choices;
+    private List<Choice > choices;				// Liste des choix creer par l'admin du poll
+    
 
-    public Poll(String title, String location, String description, boolean has_meal, PollType type) {
+    public Poll(String title, String location, String description, boolean has_meal, PollType type, List<User> users) {
         this.slug = Utils.generateSlug(24);
         this.title = title;
         this.location = location;
@@ -85,6 +82,25 @@ public class Poll implements Serializable {
         choices = new ArrayList<Choice>();
         comments = new ArrayList<Comment>();
         listUsers = new ArrayList<User>();
+        listUsers.add(admin);
+        if(users!=null && users.size()>0) {
+            for( User user: users) {
+            	listUsers.add(user);
+            }
+        }
+    }
+    
+    public void addUser(User user) {
+    	this.listUsers.add(user);
+//    	user.AddPoll(this);
+    }
+    
+    public void addChoice(Choice choice) {
+    	this.choices.add(choice);
+    }
+    
+    public void addComment(Comment comment) {
+    	this.comments.add(comment);
     }
 }
 

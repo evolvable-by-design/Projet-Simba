@@ -1,16 +1,16 @@
 package models;
 
-import lombok.*;
 
 import javax.persistence.*;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
+
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Data
-@ToString
-@NoArgsConstructor
-public class Comment implements Serializable {
+
+public class Comment extends PanacheEntity implements Serializable {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

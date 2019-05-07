@@ -39,22 +39,27 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.16</version>
-            <scope>provided</scope>
-        </dependency>
+ 
+
+		    <!-- Hibernate ORM specific dependencies -->
+		    <dependency>
+		        <groupId>io.quarkus</groupId>
+		        <artifactId>quarkus-hibernate-orm-panache</artifactId>
+		    </dependency>
+		
+		    <!-- JDBC driver dependencies -->
+		    <dependency>
+		        <groupId>io.quarkus</groupId>
+		        <artifactId>quarkus-jdbc-postgresql</artifactId>
+		    </dependency>
+
         <!-- Hibernate ORM specific dependencies -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm</artifactId>
         </dependency>
         <!-- JDBC driver dependencies -->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-postgresql</artifactId>
-        </dependency>
+  
     </dependencies>
     <build>
         <plugins>

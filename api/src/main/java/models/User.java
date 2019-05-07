@@ -16,15 +16,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 @Entity
-@Data
-@ToString
-@NoArgsConstructor
-public class User implements Serializable {
+public class User extends PanacheEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -58,9 +53,9 @@ public class User implements Serializable {
     private List<Comment> comments;
    
     @ManyToMany
-    private List<Poll> listPolls;
+    private List<Poll> listPolls;				//liste des polls auquels il a participe
     @OneToMany(mappedBy = "user")
-    private List<Choice> choices;
+    private List<Choice> choices;   			//Liste des choix fait par le user
 
     public User(String username, String password, String first_name, String last_name, String email, boolean is_temp, MealPreference preference) {
 
@@ -78,6 +73,19 @@ public class User implements Serializable {
         this.meal_preference = preference;
         listPolls = new ArrayList<Poll>();
         comments = new ArrayList<Comment>();
-
+        choices = new ArrayList<Choice>();
     }
+    
+    public void addPoll(Poll poll) {
+    	this.listPolls.add(poll);
+    }
+    
+    public void addChoice(Choice choice) {
+    	this.choices.add(choice);
+    }
+    
+    public void addComment(Comment comment) {
+    	this.comments.add(comment);
+    }
+    
 }
