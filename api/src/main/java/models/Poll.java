@@ -29,46 +29,46 @@ public class Poll extends PanacheEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
-    private Long id;  
+	public Long id;  
     
     @Column(name = "slug", updatable = false, nullable = false)
-    private String slug;
+    public String slug;
     
     @Column(name = "title", updatable = true, nullable = false)
-    private String title;
+    public String title;
     
     @Column(name = "location", updatable = true, nullable = true)
-    private String location;
+    public String location;
     
     @Column(name="description", updatable = true, nullable = true)
-    private String description;
+	public String description;
     
     @Column(name="has_meal", updatable = true, nullable = false)
-    private boolean has_meal;
+    public boolean has_meal;
     
     @Enumerated(EnumType.STRING)
     @Column(name="type", updatable = false, nullable = false)
-    private PollType type;
+    public PollType type;
 
     @Temporal(TemporalType.DATE)
     @Column(name="created_at", updatable = false, nullable = false)
-    private Date created_at;
+    public Date created_at;
     
     @ManyToMany(mappedBy="listPolls")
-    @Column(name="listUsers", updatable = false, nullable = false)
-    private List<User> listUsers;
+    @Column(name="listUsers", updatable = false, nullable = true)
+    public List<User> listUsers;
     
     @ManyToOne
     @JoinColumn(name="user_id")
-    private User admin;
+    public User admin;
     
     @Column(name="comments", updatable = true, nullable = true)
     @OneToMany(mappedBy = "poll")
-    private List<Comment> comments;
+    public List<Comment> comments;
     
-    @Column(name="choices", updatable = true, nullable = false)
+    @Column(name="choices", updatable = true, nullable = true)
     @OneToMany(mappedBy = "poll")
-    private List<Choice > choices;				// Liste des choix creer par l'admin du poll
+    public List<Choice > choices;				// Liste des choix creer par l'admin du poll
     
 
     public Poll(String title, String location, String description, boolean has_meal, PollType type, List<User> users) {
@@ -102,5 +102,8 @@ public class Poll extends PanacheEntity implements Serializable {
     public void addComment(Comment comment) {
     	this.comments.add(comment);
     }
+
+
+
 }
 

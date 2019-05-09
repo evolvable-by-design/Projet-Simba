@@ -10,7 +10,7 @@ import java.util.Date;
 
 
 @Entity
-@Cacheable
+//@Cacheable
 public class Choice extends PanacheEntity implements Serializable  {
 
 	@Id
