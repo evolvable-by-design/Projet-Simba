@@ -16,6 +16,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 
 @Entity
@@ -24,38 +27,40 @@ public class User extends PanacheEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
-    private long id;
+    public long id;
     @Column(name="username", updatable = true, nullable = false)
-    private String username;
+    public String username;
     @Column(name="password", updatable = true, nullable = false)
-    private String password;
+    public String password;
     @Column(name="first_name", updatable = true, nullable = false)
-    private String first_name;
+    public String first_name;
     @Column(name="last_name", updatable = true, nullable = false)
-    private String last_name;
+    public String last_name;
     @Column(name="email", updatable = true, nullable = false)
-    private String email;
+    public String email;
 
     @Temporal(TemporalType.DATE)
     @Column(name="created_at", updatable = false, nullable = false)
-    private Date created_at;
+    @CreationTimestamp				//met la date courante à la creation
+    public Date created_at;
     @Temporal(TemporalType.DATE)
     @Column(name="updtated_at", updatable = true, nullable = false)
-    private Date updated_at;
+    @UpdateTimestamp				//met la date d'update		
+    public Date updated_at;
     @Column(name="is_temp", updatable = true, nullable = false)
-    private boolean is_temp;
+    public boolean is_temp;
 
     @OneToOne
-    private MealPreference meal_preference;
+    public MealPreference meal_preference;
    
     
     @OneToMany(mappedBy = "user")
-    private List<Comment> comments;
+    public List<Comment> comments;
    
     @ManyToMany
-    private List<Poll> listPolls;				//liste des polls auquels il a participe
+    public List<Poll> listPolls;				//liste des polls auquels il a participe
     @OneToMany(mappedBy = "user")
-    private List<Choice> choices;   			//Liste des choix fait par le user
+    public List<Choice> choices;   			//Liste des choix fait par le user
 
     public User(String username, String password, String first_name, String last_name, String email, boolean is_temp, MealPreference preference) {
 
