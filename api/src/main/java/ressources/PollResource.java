@@ -3,10 +3,13 @@ package ressources;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.json.bind.Jsonb;
+import javax.json.bind.JsonbBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -30,7 +33,7 @@ public class PollResource {
 	@GET
 	//@Path("{polls}")
 	public List<Poll> getAll(){
-		return Poll.listAll(Sort.by(("name")));
+		return Poll.listAll(Sort.by(("title")));
 	}
 	
 	@GET
@@ -46,7 +49,10 @@ public class PollResource {
 
 	@POST
 	@Transactional
-	public Response create(@Valid Poll poll) {
+	public Response create(@FormParam("json") String json) {
+		Jsonb jsonb = JsonbBuilder.create();
+		
+		Poll poll = jsonb.fromJson(json, Poll.class);
 		if(poll.id != null) {
 			throw new WebApplicationException("Id was invalidly set on request.", 422);
 		}
