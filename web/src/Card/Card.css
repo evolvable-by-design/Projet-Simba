@@ -1,0 +1,31 @@
+.Card_Container {
+  background-color: white;
+  border: 1px solid #D9E2EC;
+  border-radius: 5px;
+  color: #242424;
+  width: 700px;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
+}
+
+.Card_Header {
+  padding: 1rem;
+  border-bottom: 1px solid #D9E2EC;
+  color: #243B53;
+}
+
+
+.Card_Header h1 {
+  text-align: center;
+  margin: 0;
+}
+
+.Card_Content {
+  padding: 1rem;
+}
+
+.Card_Footer {
+  display: flex;
+  align-content: center;
+  justify-content: flex-end;
+  padding: 1rem;
+}
