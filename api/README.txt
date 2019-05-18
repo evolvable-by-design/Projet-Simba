@@ -15,7 +15,12 @@ To generate the native executable :
 To build the Dockerfile.native :
 
     docker build -f src/main/docker/Dockerfile.native -t simba .
+    
+You can instantiate a postgresql dabase via docker by using the command line below 
+    docker run --ulimit memlock=-1:-1 -it --rm=true --memory-swappiness=0 --name postgres-quarkus-hibernate -e        POSTGRES_USER=root -e POSTGRES_PASSWORD=root -e POSTGRES_DB=simba -p 5433:5432 postgres:10.5
 
 To run the simba image :
 
     docker run -i -p 8080:8080 simba
+OR with the command below if you are using a postresql intance via docker :
+    docker run -ti -p 8080:8080 --link postgres-quarkus-hibernate quarkus/api -Dquarkus.datasource.url=jdbc:postgresql://postgres:5432/postgres-quarkus-hibernate
