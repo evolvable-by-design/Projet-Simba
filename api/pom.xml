@@ -109,7 +109,7 @@
                                     <POSTGRES_DB>simba</POSTGRES_DB>
                                 </env>
                                 <ports>
-                                    <port>5433:5432</port>
+                                    <port>5434:5432</port>
                                 </ports>
                                 <log>
                                     <prefix>PostgreSQL: </prefix>

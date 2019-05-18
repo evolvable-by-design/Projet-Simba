@@ -1,6 +1,5 @@
 package models;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,12 +18,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import utils.Utils;
 
 @Entity
 
-public class Poll extends PanacheEntity implements Serializable {
+public class Poll extends PanacheEntityBase  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,17 +36,17 @@ public class Poll extends PanacheEntity implements Serializable {
     @Column(name = "title", updatable = true, nullable = false)
     public String title;
     
-    @Column(name = "location", updatable = true, nullable = true)
+    @Column(name = "locationPoll", updatable = true, nullable = true)
     public String location;
     
-    @Column(name="description", updatable = true, nullable = true)
+    @Column(name="descriptionPoll", updatable = true, nullable = true)
 	public String description;
     
     @Column(name="has_meal", updatable = true, nullable = false)
     public boolean has_meal;
     
     @Enumerated(EnumType.STRING)
-    @Column(name="type", updatable = false, nullable = false)
+    @Column(name="typePoll", updatable = false, nullable = false)
     public PollType type;
 
     @Temporal(TemporalType.DATE)
@@ -56,11 +55,12 @@ public class Poll extends PanacheEntity implements Serializable {
     
     @ManyToMany(mappedBy="listPolls")
     @Column(name="listUsers", updatable = false, nullable = true)
-    public List<User> listUsers;
+    public List<UserEntity> listUsers;
     
+    //@Column(name="admin", updatable = false, nullable = true)
     @ManyToOne
-    @JoinColumn(name="user_id")
-    public User admin;
+    @JoinColumn(name="adminPoll")
+    public UserEntity admin;
     
     @Column(name="comments", updatable = true, nullable = true)
     @OneToMany(mappedBy = "poll")
@@ -68,10 +68,10 @@ public class Poll extends PanacheEntity implements Serializable {
     
     @Column(name="choices", updatable = true, nullable = true)
     @OneToMany(mappedBy = "poll")
-    public List<Choice > choices;				// Liste des choix creer par l'admin du poll
+    public List<Choice> choices;				// Liste des choix creer par l'admin du poll
     
 
-    public Poll(String title, String location, String description, boolean has_meal, PollType type, List<User> users) {
+    public Poll(String title, String location, String description, boolean has_meal, PollType type, List<UserEntity> users) {
         this.slug = Utils.generateSlug(24);
         this.title = title;
         this.location = location;
@@ -81,16 +81,16 @@ public class Poll extends PanacheEntity implements Serializable {
         this.created_at = new Date();
         choices = new ArrayList<Choice>();
         comments = new ArrayList<Comment>();
-        listUsers = new ArrayList<User>();
+        listUsers = new ArrayList<UserEntity>();
         listUsers.add(admin);
         if(users!=null && users.size()>0) {
-            for( User user: users) {
+            for( UserEntity user: users) {
             	listUsers.add(user);
             }
         }
     }
     
-    public void addUser(User user) {
+    public void addUser(UserEntity user) {
     	this.listUsers.add(user);
 //    	user.AddPoll(this);
     }

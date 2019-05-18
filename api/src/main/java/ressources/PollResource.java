@@ -31,7 +31,7 @@ public class PollResource {
 
 
 	@GET
-	//@Path("{polls}")
+	@Path("{polls}")
 	public List<Poll> getAll(){
 		return Poll.listAll(Sort.by(("title")));
 	}
@@ -66,9 +66,6 @@ public class PollResource {
 	@Path("{id}")
 	@Transactional
 	public Poll update(@PathParam(value = "id") Long id, @Valid Poll poll) {
-		if(poll.id == null) {
-			throw new WebApplicationException("Poll ID was not set on request.", 422);
-		}
 
 		Poll entity = Poll.findById(id);
 
