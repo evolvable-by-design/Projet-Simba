@@ -31,7 +31,6 @@ public class PollResource {
 
 
 	@GET
-	@Path("{polls}")
 	public List<Poll> getAll(){
 		return Poll.listAll(Sort.by(("title")));
 	}
@@ -49,14 +48,15 @@ public class PollResource {
 
 	@POST
 	@Transactional
-	public Response create(@FormParam("json") String json) {
-		Jsonb jsonb = JsonbBuilder.create();
+	public Response create(@Valid Poll newpoll) {
+		Poll poll = new Poll();
 		
-		Poll poll = jsonb.fromJson(json, Poll.class);
-		if(poll.id != null) {
+		if(newpoll.id != null) {
 			throw new WebApplicationException("Id was invalidly set on request.", 422);
 		}
-
+		
+		poll = newpoll;
+		
 		poll.persist();
 		//return Response.ok(poll).status(201).build();
 		return Response.status(Response.Status.CREATED).entity(poll).build();

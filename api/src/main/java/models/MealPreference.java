@@ -11,11 +11,10 @@ import javax.persistence.OneToOne;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
 @Entity
-
 public class MealPreference extends PanacheEntityBase  {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+//    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, nullable = false)
     public long id;
     

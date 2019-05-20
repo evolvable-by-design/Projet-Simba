@@ -18,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import utils.Utils;
 
@@ -46,18 +48,18 @@ public class Poll extends PanacheEntityBase  {
     public boolean has_meal;
     
     @Enumerated(EnumType.STRING)
-    @Column(name="typePoll", updatable = false, nullable = false)
+    @Column(name="typePoll", updatable = false, nullable = true)
     public PollType type;
 
     @Temporal(TemporalType.DATE)
     @Column(name="created_at", updatable = false, nullable = false)
+    @CreationTimestamp
     public Date created_at;
     
     @ManyToMany(mappedBy="listPolls")
     @Column(name="listUsers", updatable = false, nullable = true)
     public List<UserEntity> listUsers;
     
-    //@Column(name="admin", updatable = false, nullable = true)
     @ManyToOne
     @JoinColumn(name="adminPoll")
     public UserEntity admin;
@@ -70,6 +72,9 @@ public class Poll extends PanacheEntityBase  {
     @OneToMany(mappedBy = "poll")
     public List<Choice> choices;				// Liste des choix creer par l'admin du poll
     
+    public Poll() {
+    	super();
+    }
 
     public Poll(String title, String location, String description, boolean has_meal, PollType type, List<UserEntity> users) {
         this.slug = Utils.generateSlug(24);

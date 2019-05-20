@@ -31,7 +31,7 @@ public class UserEntity extends PanacheEntityBase {
     @Column(name="username", updatable = true, nullable = false)
     public String username;
     
-    @Column(name="Userpassword", updatable = true, nullable = false)
+    @Column(name="Userpassword", updatable = true, nullable = true)
     public String password;
     
     @Column(name="first_name", updatable = true, nullable = false)
@@ -67,6 +67,10 @@ public class UserEntity extends PanacheEntityBase {
     @OneToMany(mappedBy = "user")
     public List<Choice> choices;   			//Liste des choix fait par le user
 
+    public UserEntity() {
+    	super();
+    }
+    
     public UserEntity(String username, String password, String first_name, String last_name, String email, boolean is_temp, MealPreference preference) {
 
         this.username = username;

@@ -46,13 +46,12 @@ public class UserResource {
 	
 	@POST
 	@Transactional
-	public Response create(@FormParam("json") String  json) {
-		Jsonb jsonb = JsonbBuilder.create();
+	public Response create(@Valid UserEntity newUser ) {
 		
-		UserEntity user = jsonb.fromJson(json, UserEntity.class);
-		if(user == null) {
-			throw new WebApplicationException("Id was invalidly set on request.", 422);
-		}
+		UserEntity user = newUser;
+//		if(newUser.) {
+//			throw new WebApplicationException("Id was invalidly set on request.", 422);
+//		}
 		user.persist();
 		return Response.status(Response.Status.CREATED).entity(user).build();
 	}
