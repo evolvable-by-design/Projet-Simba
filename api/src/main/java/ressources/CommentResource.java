@@ -20,7 +20,7 @@ import models.Comment;
 import models.Poll;
 
 ///polls/id/comments
-@Path("/polls")
+@Path("/polls/{idPoll}/comments")
 @ApplicationScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -28,39 +28,31 @@ public class CommentResource {
 
 	/**
 	 * 
-	 * @param id
+	 * @param idPoll
 	 * @return tous les commentaires d'un poll
 	 */
 	@GET
-	@Path("{/id/comments}")
-	public List<Comment> getAllComments(@PathParam("id") Long id){
-		Poll entity = Poll.findById(id);
-		if(entity == null) {
-			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
-		}
-		
-		return entity.comments;
+	@Path("")
+	public List<Comment> getAllComments(@PathParam("idPoll") Long idPoll){
+		return isPollExisting(idPoll).comments;
 	}
 	
 	
 	/**
 	 * 
-	 * @param id
+	 * @param idComment
 	 * @return le commentaire dont l'id est IdComment d'un poll
 	 */
 	@GET
-	@Path("{/id/comments/IdComment}")
-	public Comment getOneComment(@PathParam("id") Long id, @PathParam("IdComment") Long Idcomment){
-		Poll entity = Poll.findById(id);
-		if(entity == null) {
-			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
-		}
+	@Path("/{idComment}")
+	public Comment getOneComment(@PathParam("idPoll") Long idPoll, @PathParam("idComment") Long idComment){
+		Poll poll = isPollExisting(idPoll);
+		Comment comment = isCommentExisting(idComment);
 		
-		Comment comment = Comment.findById(Idcomment);
-		int index = entity.comments.indexOf(comment);
+		int index = poll.comments.indexOf(comment);
 		
 		if(index < 0) {
-			throw new WebApplicationException("comment with id of " + Idcomment + " does not exist in this poll.", 404);
+			throw new WebApplicationException("comment with id of " + idComment + " does not exist in this poll.", 404);
 		}
 		
 		return comment;
@@ -71,17 +63,11 @@ public class CommentResource {
 	 */
 	@Transactional
 	@POST
-	@Path("{/id/comments}")
-	public Comment create(@PathParam("id") Long id, @Valid Comment comment) {
-		Poll entity = Poll.findById(id);
-		
-		if(entity == null) {
-			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
-		}
-		
+	@Path("")
+	public Comment createComment(@PathParam("idPoll") Long idPoll, @Valid Comment comment) {
+		Poll poll = isPollExisting(idPoll);
+		poll.comments.add(comment);
 		comment.persist();
-		entity.comments.add(comment);
-		
 		return comment;
 		
 	}
@@ -91,23 +77,32 @@ public class CommentResource {
 	 */
 	@DELETE
 	@Transactional
-	@Path("{/id/comments/IdComment}")
-	public Response delete(@PathParam("id") Long id, @PathParam("IdComment") Long IdComment) {
-		Poll entity = Poll.findById(id);
-		if(entity == null) {
-			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
+	@Path("{/{idComment}")
+	public Response delete(@PathParam("idPoll") Long idPoll, @PathParam("idComment") Long idComment) {
+		Poll poll = isPollExisting(idPoll);
+		Comment comment = isCommentExisting(idComment);
+		poll.comments.remove(comment);
+		if(comment.isPersistent()) {
+			comment.delete();
 		}
-		
-		Comment comment = Comment.findById(IdComment);
-		
-		if(comment == null) {
-			throw new WebApplicationException("Comment with id of " + IdComment + " does not exist.", 404);
-		}
-		
-		entity.comments.remove(comment);
-		if(comment.isPersistent()) comment.delete();
 
 		return Response.status(204).build();
+	}
+
+	private Poll isPollExisting(Long id){
+		Poll poll = Poll.findById(id);
+		if(poll == null) {
+			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
+		}
+		return poll;
+	}
+
+	private Comment isCommentExisting(Long id){
+		Comment comment = Comment.findById(id);
+		if(comment == null) {
+			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
+		}
+		return comment;
 	}
 	
 }

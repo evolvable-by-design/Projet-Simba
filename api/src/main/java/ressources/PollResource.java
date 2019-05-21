@@ -31,32 +31,25 @@ public class PollResource {
 
 
 	@GET
-	public List<Poll> getAll(){
+	@Path("")
+	public List<Poll> getAllPolls(){
 		return Poll.listAll(Sort.by(("title")));
 	}
 	
 	@GET
 	@Path("{id}")
-	public Poll get(@PathParam(value = "id") Long id){
-		Poll entity = Poll.findById(id);
-		if (entity == null) {
-			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
-		}
-		return entity;
+	public Poll getPoll(@PathParam(value = "id") Long id){
+		return isPollExisting(id);
 	}
 
 
 	@POST
 	@Transactional
-	public Response create(@Valid Poll newpoll) {
-		Poll poll = new Poll();
-		
-		if(newpoll.id != null) {
+	@Path("")
+	public Response create(@Valid Poll poll) {
+		if(poll.id != null) {
 			throw new WebApplicationException("Id was invalidly set on request.", 422);
 		}
-		
-		poll = newpoll;
-		
 		poll.persist();
 		//return Response.ok(poll).status(201).build();
 		return Response.status(Response.Status.CREATED).entity(poll).build();
@@ -65,41 +58,33 @@ public class PollResource {
 	@PUT
 	@Path("{id}")
 	@Transactional
-	public Poll update(@PathParam(value = "id") Long id, @Valid Poll poll) {
+	public Poll updatePoll(@PathParam(value = "id") Long id, @Valid Poll poll) {
 
-		Poll entity = Poll.findById(id);
+		Poll ancientPoll = isPollExisting(id);
 
-		if(entity == null) {
-			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
-		}
+		ancientPoll.title = poll.title;
+		ancientPoll.id = poll.id;
+		ancientPoll.description = poll.description;
+		ancientPoll.admin = poll.admin;
+		ancientPoll.choices = poll.choices;
+		ancientPoll.comments = poll.comments;
+		ancientPoll.has_meal = poll.has_meal;
+		ancientPoll.listUsers = poll.listUsers;
+		ancientPoll.slug = poll.slug;
+		ancientPoll.created_at = poll.created_at;
+		ancientPoll.location = poll.location;
+		ancientPoll.type = poll.type;
 
-		entity.title = poll.title;
-		entity.id = poll.id;
-		entity.description = poll.description;
-		entity.admin = poll.admin;
-		entity.choices = poll.choices;
-		entity.comments = poll.comments;
-		entity.has_meal = poll.has_meal;
-		entity.listUsers = poll.listUsers;
-		entity.slug = poll.slug;
-		entity.created_at = poll.created_at;
-		entity.location = poll.location;
-		entity.type = poll.type;
-
-		return entity;
-
+		return ancientPoll;
 	}
 
 	@DELETE
 	@Path("{id}")
 	@Transactional
 	public Response deletePoll(@PathParam(value ="id") Long id) {
-		Poll entity = Poll.findById(id);
-		if (entity == null) {
-			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
-		}
+		Poll poll = isPollExisting(id);
 		
-		if(entity.isPersistent())	entity.delete();
+		if(poll.isPersistent())	poll.delete();
 		
 		return Response.status(204).build();
 	}
@@ -118,6 +103,14 @@ public class PollResource {
 		}
 
 		return entity.slug;
+	}
+
+	private Poll isPollExisting(Long id){
+		Poll poll = Poll.findById(id);
+		if(poll == null) {
+			throw new WebApplicationException("Poll with id of " + id + " does not exist.", 404);
+		}
+		return poll;
 	}
 	
 	//TODO :
