@@ -1,9 +1,8 @@
-package utils;
+package com.project.doodle;
 
 import java.util.Random;
 
 public class Utils {
-
     private static Random random = new Random();
     private static String CHARS = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ234567890_-";
 
