@@ -1,0 +1,26 @@
+version: '3'
+services:
+  mydb:
+    hostname : quarkus
+    image: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=root  
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=simba
+    ports:
+      - 5432:5432
+  server:
+    build: .
+    image: quarkus/api
+    links:
+      - mydb
+    depends_on: 
+      - mydb
+    ports : 
+      - 8080:8080
+  #  entrypoint: ["-Dquarkus.http.host=0.0.0.0", "-Dquarkus.datasource.url=jdbc:postgresql://postgres:5432/simba", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"]
+volumes:
+  db-data:
+    driver: local

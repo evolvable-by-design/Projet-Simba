@@ -1,0 +1,48 @@
+version: '3'
+services:
+  mydb:
+    hostname : quarkus
+    image: postgres
+    container_name: pg_container
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      
+
+    ports:
+      - 5432:5432
+      
+  server:
+    build: .
+    image: quarkus/api
+    container_name: api
+    links:
+      - mydb
+    environment:
+   #   - POSTGRES_USER=root  
+   #   - POSTGRES_PASSWORD=root
+  #    - POSTGRES_DB=simba
+      - PGPASSWORD=root
+      - PGUSER=root
+      - PGDATABASE=simba
+      - PGHOST=database
+      - PGPORT=5432
+    depends_on: 
+      - mydb
+    ports : 
+      - 8080:8080
+    #entrypoint: ["./work/application/","-Dquarkus.http.host=0.0.0.0", "-Dquarkus.datasource.url=jdbc:postgresql://postgres:5432/simba", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"]
+    volumes: {}
+      db-data: 
+  #  driver: local
+    command: >
+      /bin/sh -c "
+      echo api service started;
+      ./application -Dquarkus.http.host=0.0.0.0 
+      "
+  
+    
+    
+    
+    
+    
+    

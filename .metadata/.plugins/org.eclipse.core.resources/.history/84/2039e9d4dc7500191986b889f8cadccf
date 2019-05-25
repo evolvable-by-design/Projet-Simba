@@ -1,0 +1,23 @@
+# Configuration file
+# key = value
+# configure your datasource
+quarkus.datasource.url = jdbc:postgresql://localhost:5432/simba
+#quarkus.datasource.url = jdbc:postgresql:simba
+quarkus.datasource.driver = org.postgresql.Driver
+quarkus.datasource.username = root
+quarkus.datasource.password = root
+
+# drop and create the database at startup (use `update` to only update the schema or drop-and-create)
+quarkus.hibernate-orm.database.generation=drop-and-create
+quarkus.hibernate-orm.log.sql=true
+
+
+mongo.user=root
+mongo.password=root
+mongo.host=localhost
+quarkus.index-dependency.mongo.group-id=org.mongodb
+quarkus.index-dependency.mongo.artifact-id=mongodb-driver-sync
+quarkus.index-dependency.mongo-core.group-id=org.mongodb
+quarkus.index-dependency.mongo-core.artifact-id=mongodb-driver-core
+quarkus.index-dependency.bson.group-id=org.mongodb
+quarkus.index-dependency.bson.artifact-id=bson
