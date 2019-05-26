@@ -4,14 +4,14 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import './App.css';
 import Header from './Header'
 import CreatePoll from './CreatePoll';
+import Home from './Home';
 
 function App() {
   return (
     <Router>
       <Header />
-      <div className="Container">
-        <Route path='/create' exact component={CreatePoll}/>
-      </div>
+      <Route path='/' exact component={Home}/>
+      <Route path='/create' exact component={CreatePoll}/>
     </Router>
   );
 }
