@@ -1,5 +1,8 @@
 package com.project.doodle.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -21,33 +24,22 @@ public class User {
     @CreationTimestamp
     private Date createdAt;
 
-    @OneToMany(mappedBy = "users")
+    @JsonIgnore
+    @ManyToMany(mappedBy = "users")
     List<Choice> userChoices;
-
-    @ManyToMany(mappedBy = "pollUsers")
-    List<Poll> userPolls;
 
     public User(){}
 
-    public User(String username, String first_name, String last_name, String email, List<Choice> userChoices, List<Poll> userPolls) {
+    public User(String username, String first_name, String last_name, String email, List<Choice> userChoices) {
         this.username = username;
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
         this.userChoices = userChoices;
-        this.userPolls = userPolls;
-    }
-
-    public void addPoll(Poll poll){
-        this.userPolls.add(poll);
     }
 
     public void addChoice(Choice choice){
         this.userChoices.add(choice);
-    }
-
-    public void removePoll(Poll poll){
-        this.userPolls.remove(poll);
     }
 
     public void removeChoice(Choice choice){
@@ -108,14 +100,6 @@ public class User {
 
     public void setUserChoices(List<Choice> userChoices) {
         this.userChoices = userChoices;
-    }
-
-    public List<Poll> getUserPolls() {
-        return userPolls;
-    }
-
-    public void setUserPolls(List<Poll> userPolls) {
-        this.userPolls = userPolls;
     }
 
     @Override

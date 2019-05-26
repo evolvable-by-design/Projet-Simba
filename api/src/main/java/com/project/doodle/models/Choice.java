@@ -1,5 +1,7 @@
 package com.project.doodle.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -19,13 +21,6 @@ public class Choice {
     @Temporal(TemporalType.TIMESTAMP)
     private Date end_date;
 
-    @ManyToOne
-    @JoinTable(
-            name = "choice_poll",
-            joinColumns = @JoinColumn(name = "choice_id"),
-            inverseJoinColumns = @JoinColumn(name = "poll_id"))
-    private Poll poll;
-
     @ManyToMany
     @JoinTable(
             name = "choice_user",
@@ -36,11 +31,10 @@ public class Choice {
 
     public Choice(){}
 
-    public Choice(String name, Date start_date, Date end_date, Poll poll, List<User> users) {
+    public Choice(String name, Date start_date, Date end_date, List<User> users) {
         this.name = name;
         this.start_date = start_date;
         this.end_date = end_date;
-        this.poll = poll;
         this.users = users;
     }
 
@@ -84,19 +78,11 @@ public class Choice {
         this.end_date = end_date;
     }
 
-    public Poll getPoll() {
-        return poll;
-    }
-
-    public void setPoll(Poll poll) {
-        this.poll = poll;
-    }
-
-    public List<User> getUser() {
+    public List<User> getUsers() {
         return users;
     }
 
-    public void setUser(User user) {
+    public void setUsers(List<User> users) {
         this.users = users;
     }
 

@@ -91,9 +91,11 @@ public class ChoiceResource {
         }
         // On enlève le choix du poll
         poll.get().removeChoice(choice.get());
+        pollRepository.save(poll.get());
         // On enlève le choix de la liste de chaque utilisateur
-        for (User user:choice.get().getUser()) {
+        for (User user:choice.get().getUsers()) {
             user.removeChoice(choice.get());
+            userRepository.save(user);
         }
         // On supprime le choix de la bdd
         choiceRepository.deleteById(idChoice);
@@ -107,20 +109,11 @@ public class ChoiceResource {
         if (!poll.isPresent()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        // On vérifie qu'aucun choix n'appartienne déjà au poll
-        for (Choice choice:choices) {
-            Optional<Choice> optionalChoice = choiceRepository.findById(choice.getId());
-            if(optionalChoice.isPresent()){
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        }
         // On ajoute chaque choix au poll et vice versa
         for (Choice choice:choices) {
             poll.get().addChoice(choice);
-            choice.setPoll(poll.get());
-            choiceRepository.save(choice);
+            pollRepository.save(poll.get());
         }
-
         return new ResponseEntity<>(choices, HttpStatus.CREATED);
     }
 
@@ -143,7 +136,7 @@ public class ChoiceResource {
         return new ResponseEntity<>(updatedChoice, HttpStatus.OK);
     }
 
-    @GetMapping("/polls/{idPoll}/choices/{idChoice}/vote/{idUser}")
+    @PostMapping("/polls/{idPoll}/choices/{idChoice}/vote/{idUser}")
     public ResponseEntity<Object> vote(@PathVariable long idPoll, @PathVariable long idChoice, @PathVariable long idUser) {
         // On vérifie que le poll, le choix et l'utilisateur existent
         Optional<Poll> poll = pollRepository.findById(idPoll);
@@ -162,12 +155,12 @@ public class ChoiceResource {
         }
         // On ajoute le choix à la liste de l'utilisateur et vice versa
         choice.get().addUser(user.get());
-        user.get().addChoice(choice.get());
+        choiceRepository.save(choice.get());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/polls/{idPoll}/choices/{idChoice}/removevote/{idUser}")
+    @PostMapping("/polls/{idPoll}/choices/{idChoice}/removevote/{idUser}")
     public ResponseEntity<Object> removeVote(@PathVariable long idPoll, @PathVariable long idChoice, @PathVariable long idUser) {
         // On vérifie que le poll, le choix et l'utilisateur existent
         Optional<Poll> poll = pollRepository.findById(idPoll);
@@ -186,7 +179,9 @@ public class ChoiceResource {
         }
         // On retire le choix à la liste de l'utilisateur et vice versa
         choice.get().removeUser(user.get());
+        choiceRepository.save(choice.get());
         user.get().removeChoice(choice.get());
+        userRepository.save(user.get());
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -204,6 +199,6 @@ public class ChoiceResource {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         // On compte le nombre de vote pour le choix
-        return new ResponseEntity<>(choice.get().getUser().size(),HttpStatus.OK);
+        return new ResponseEntity<>(choice.get().getUsers().size(),HttpStatus.OK);
     }
 }

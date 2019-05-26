@@ -15,7 +15,6 @@ public class Poll {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String slug;
     private String title;
     private String location;
     private String description;
@@ -24,38 +23,21 @@ public class Poll {
     @CreationTimestamp
     private Date createdAt;
 
-    @OneToMany(mappedBy = "poll")
+    @OneToMany(cascade = CascadeType.ALL)
     List<Choice> pollChoices;
-
-    @ManyToMany
-    @JoinTable(
-            name = "poll_user",
-            joinColumns = @JoinColumn(name = "poll_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    List<User> pollUsers;
 
     public Poll(){}
 
-    public Poll(String title, String location, String description, boolean has_meal, List<Choice> pollChoices, List<User> pollUsers) {
-        this.slug = id+generateSlug(24);
+    public Poll(String title, String location, String description, boolean has_meal, List<Choice> pollChoices) {
         this.title = title;
         this.location = location;
         this.description = description;
         this.has_meal = has_meal;
         this.pollChoices = pollChoices;
-        this.pollUsers = pollUsers;
-    }
-
-    public void addUser(User user){
-        this.pollUsers.add(user);
     }
 
     public void addChoice(Choice choice){
         this.pollChoices.add(choice);
-    }
-
-    public void removeUser(User user){
-        this.pollUsers.remove(user);
     }
 
     public void removeChoice(Choice choice){
@@ -70,15 +52,7 @@ public class Poll {
         this.id = id;
     }
 
-    public String getSlug() {
-        return slug;
-    }
-
-    public void setSlug(String slug) {
-        this.slug = slug;
-    }
-
-    public String getTitle() {
+   public String getTitle() {
         return title;
     }
 
@@ -126,20 +100,10 @@ public class Poll {
         this.pollChoices = pollChoices;
     }
 
-    public List<User> getPollUsers() {
-        return pollUsers;
-    }
-
-    public void setPollUsers(List<User> pollUsers) {
-        this.pollUsers = pollUsers;
-    }
-
-
     @Override
     public String toString() {
         return "Poll{" +
                 "id=" + id +
-                ", slug='" + slug + '\'' +
                 ", title='" + title + '\'' +
                 ", location='" + location + '\'' +
                 ", description='" + description + '\'' +

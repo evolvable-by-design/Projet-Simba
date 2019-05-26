@@ -5,6 +5,7 @@ import com.project.doodle.models.Poll;
 import com.project.doodle.models.User;
 import com.project.doodle.repositories.ChoiceRepository;
 import com.project.doodle.repositories.PollRepository;
+import com.project.doodle.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,11 @@ import java.util.Optional;
 public class PollResource {
 
     @Autowired
+    private ChoiceRepository choiceRepository;
+    @Autowired
     private PollRepository pollRepository;
     @Autowired
-    private ChoiceRepository choiceRepository;
+    private UserRepository userRepository;
 
     @GetMapping("/polls")
     public ResponseEntity<List<Poll>> retrieveAllpolls() {
@@ -50,18 +53,8 @@ public class PollResource {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         // On supprime tous les choix du poll
-        for (Choice choice:poll.get().getPollChoices()) {
-            // On supprime le choix de la liste de chaque utilisateur
-            for (User user:choice.getUser()) {
-                user.removeChoice(choice);
-            }
-            // On supprime le choix de la bdd
-            choiceRepository.deleteById(choice.getId());
-        }
-        // On supprime le poll de la liste de poll des utilisateurs
-        for (User user:poll.get().getPollUsers()) {
-            user.removePoll(poll.get());
-        }
+        // Fait automatiquement par le cascade type ALL
+
         // On supprime le poll de la bdd
         pollRepository.deleteById(idPoll);
         return new ResponseEntity<>(poll.get(), HttpStatus.OK);
@@ -69,11 +62,6 @@ public class PollResource {
 
     @PostMapping("/polls")
     public ResponseEntity<Poll> createPoll(@Valid @RequestBody Poll poll) {
-        // On vérifie que le poll n'existe pas déjà
-        Optional<Poll> optionalPoll = pollRepository.findById(poll.getId());
-        if (optionalPoll.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
         // On enregistre le poll dans la bdd
         Poll savedPoll = pollRepository.save(poll);
         return new ResponseEntity<>(savedPoll, HttpStatus.CREATED);

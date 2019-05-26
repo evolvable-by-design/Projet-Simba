@@ -22,6 +22,10 @@ import java.util.Optional;
 public class UserResource {
 
     @Autowired
+    private ChoiceRepository choiceRepository;
+    @Autowired
+    private PollRepository pollRepository;
+    @Autowired
     private UserRepository userRepository;
 
 
@@ -49,13 +53,10 @@ public class UserResource {
         if (!user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        // On supprime l'utilisateur de la liste d'utilisateur de chaque poll
-        for (Poll poll: user.get().getUserPolls()) {
-            poll.removeUser(user.get());
-        }
         // On supprime l'utilisateur de la liste d'utilisateur de chaque choix
         for (Choice choice: user.get().getUserChoices()) {
             choice.removeUser(user.get());
+            choiceRepository.save(choice);
         }
         // On supprime l'utilisateur de la bdd
         userRepository.deleteById(idUser);
@@ -64,12 +65,7 @@ public class UserResource {
 
     @PostMapping("/users")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        // On vérifie que l'utilisateur n'existe pas déjà
-        Optional<User> optionalUser = userRepository.findById(user.getId());
-        if (optionalUser.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        // On sauvegarde l'utilisateur dans la bdd
+       // On sauvegarde l'utilisateur dans la bdd
         User savedUser = userRepository.save(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
@@ -77,7 +73,7 @@ public class UserResource {
     @PutMapping("/users/{idUser}")
     public ResponseEntity<User> updateUser(@PathVariable long idUser, @Valid @RequestBody User user) {
         // On vérifie que l'utilisateur existe
-        Optional<User> optionalUser = userRepository.findById(user.getId());
+        Optional<User> optionalUser = userRepository.findById(idUser);
         if (!optionalUser.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
