@@ -10,7 +10,7 @@ function App() {
     <Router>
       <Header />
       <div className="Container">
-        <Route path='/' exact component={CreatePoll}/>
+        <Route path='/create' exact component={CreatePoll}/>
       </div>
     </Router>
   );

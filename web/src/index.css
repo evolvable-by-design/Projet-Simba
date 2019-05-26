@@ -13,17 +13,17 @@ h1 {
 }
 
 .Btn-primary {
-  background-color: #3490dc;
+  background-color: #4D3DF7;
   border-radius: .25rem;
-  font-weight: 700;
-  padding: 0.5rem 1rem;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  font-size: 1.2rem;
   color: #fff;
   border: 0 solid #dae1e7;
-  line-height: 1.15;
   cursor: pointer;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
 }
 
 .Btn-primary:hover {
-  background-color: #2779bd;
+  background-color: #3525E6;
 }
