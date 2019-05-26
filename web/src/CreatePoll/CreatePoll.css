@@ -41,7 +41,6 @@ input:focus, textarea:focus {
 .CreatePoll_Buttons {
   display: flex;
   justify-content: space-between;
-  width: 100%;
 }
 
 .CreatePoll_Button {

@@ -6,7 +6,6 @@ import 'moment/locale/fr'
 
 import Card from '../Card';
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import './CreatePoll.css'
 
 const Informations = ({next, title, location, description, setLocation, setTitle, setDescription}) => {

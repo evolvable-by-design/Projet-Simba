@@ -3,13 +3,13 @@
   border: 1px solid #D9E2EC;
   border-radius: 5px;
   color: #242424;
-  width: 700px;
+  width: 800px;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
 }
 
 .Card_Header {
   padding: 1rem;
-  border-bottom: 1px solid #D9E2EC;
+  border-bottom: 2px solid #4D3DF7;
   color: #243B53;
 }
 
@@ -17,6 +17,7 @@
 .Card_Header h1 {
   text-align: center;
   margin: 0;
+  color: #4D3DF7;
 }
 
 .Card_Content {
@@ -24,8 +25,5 @@
 }
 
 .Card_Footer {
-  display: flex;
-  align-content: center;
-  justify-content: flex-end;
-  padding: 1rem;
+  padding: 0 1rem 1rem 1rem;
 }
