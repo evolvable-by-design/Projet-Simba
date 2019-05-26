@@ -3,13 +3,21 @@
   border: 1px solid #D9E2EC;
   border-radius: 5px;
   color: #242424;
+<<<<<<< HEAD
+  width: 800px;
+=======
   width: 700px;
+>>>>>>> master
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
 }
 
 .Card_Header {
   padding: 1rem;
+<<<<<<< HEAD
+  border-bottom: 2px solid #4D3DF7;
+=======
   border-bottom: 1px solid #D9E2EC;
+>>>>>>> master
   color: #243B53;
 }
 
@@ -17,6 +25,10 @@
 .Card_Header h1 {
   text-align: center;
   margin: 0;
+<<<<<<< HEAD
+  color: #4D3DF7;
+=======
+>>>>>>> master
 }
 
 .Card_Content {
@@ -24,8 +36,12 @@
 }
 
 .Card_Footer {
+<<<<<<< HEAD
+  padding: 0 1rem 1rem 1rem;
+=======
   display: flex;
   align-content: center;
   justify-content: flex-end;
   padding: 1rem;
+>>>>>>> master
 }

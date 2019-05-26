@@ -10,7 +10,11 @@ function App() {
     <Router>
       <Header />
       <div className="Container">
+<<<<<<< HEAD
+        <Route path='/create' exact component={CreatePoll}/>
+=======
         <Route path='/' exact component={CreatePoll}/>
+>>>>>>> master
       </div>
     </Router>
   );
