@@ -136,28 +136,33 @@ public class ChoiceResource {
         return new ResponseEntity<>(updatedChoice, HttpStatus.OK);
     }
 
-    @PostMapping("/polls/{idPoll}/choices/{idChoice}/vote/{idUser}")
-    public ResponseEntity<Object> vote(@PathVariable long idPoll, @PathVariable long idChoice, @PathVariable long idUser) {
-        // On vérifie que le poll, le choix et l'utilisateur existent
+    @PostMapping("/polls/{idPoll}/vote/{idUser}")
+    public ResponseEntity<List<Choice>> vote(@Valid @RequestBody List<Choice> choices, @PathVariable long idPoll, @PathVariable long idUser) {
+        // On vérifie que le poll et l'utilisateur existent
         Optional<Poll> poll = pollRepository.findById(idPoll);
-        Optional<Choice> choice = choiceRepository.findById(idChoice);
         Optional<User> user = userRepository.findById(idUser);
-        if (!poll.isPresent() || !choice.isPresent() || !user.isPresent()){
+        if (!poll.isPresent() || !user.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        // On vérifie que le choix appartienne bien au poll
-        if(!poll.get().getPollChoices().contains(choice.get())){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        for (Choice choice : choices) {
+            // On vérifie que le choice existe
+            Optional<Choice> optchoice = choiceRepository.findById(choice.getId());
+            if (!optchoice.isPresent()){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            // On vérifie que le choix appartienne bien au poll
+            if(!poll.get().getPollChoices().contains(choice)){
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            // On vérifie que le user n'ai pas déjà voté pour ce choix
+            if(user.get().getUserChoices().contains(choice)){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            // On ajoute le choix à la liste de l'utilisateur et vice versa
+            choice.addUser(user.get());
+            choiceRepository.save(choice);
         }
-        // On vérifie que le user n'ai pas déjà voté pour ce choix
-        if(user.get().getUserChoices().contains(choice.get())){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        // On ajoute le choix à la liste de l'utilisateur et vice versa
-        choice.get().addUser(user.get());
-        choiceRepository.save(choice.get());
-
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(choices, HttpStatus.OK);
     }
 
     @PostMapping("/polls/{idPoll}/choices/{idChoice}/removevote/{idUser}")
