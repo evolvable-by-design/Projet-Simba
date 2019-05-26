@@ -13,11 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
 public class UserResource {
 
@@ -44,6 +45,30 @@ public class UserResource {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("/polls/{idPoll}/users")
+    public ResponseEntity<List<User>> getAllUserFromPoll(@PathVariable long idPoll){
+        List<User> users = new ArrayList<>();
+        // On vérifie que le poll existe
+        Optional<Poll> poll = pollRepository.findById(idPoll);
+        if (!poll.isPresent()){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // On parcours les choix du poll pour récupérer les users ayant voté
+        if (!poll.get().getPollChoices().isEmpty()) {
+            for (Choice choice : poll.get().getPollChoices()) {
+                if (!choice.getUsers().isEmpty()) {
+                    for (User user : choice.getUsers()) {
+                        // On vérifie que le user ne soit pas déjà dans la liste
+                        if (!users.contains(user)) {
+                            users.add(user);
+                        }
+                    }
+                }
+            }
+        }
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{idUser}")
