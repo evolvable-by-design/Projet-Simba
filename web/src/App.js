@@ -5,6 +5,7 @@ import './App.css';
 import Header from './Header'
 import CreatePoll from './CreatePoll';
 import Home from './Home';
+import Poll from './Poll';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Header />
       <Route path='/' exact component={Home}/>
       <Route path='/create' exact component={CreatePoll}/>
+      <Route path='/polls/:id' exact component={Poll}/>
     </Router>
   );
 }
