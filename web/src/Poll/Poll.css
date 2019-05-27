@@ -1,13 +1,13 @@
-:root{
+:root {
   --header-height : 180px;
   --participant-width : 230px;
   --cell-width : 65px;
   --cell-height: 40px;  
   --new-participant-height : 65px;
-  --cell-padding : 10px;
+  --cell-padding : 1rem;
 
-  --color-new-participant : rgb(177,217,252);
-  --color-vote-yes : rgb(205,234,161);
+  --color-new-participant : #E6E6FF;
+  --color-vote-yes : #E6E6FF;
   --color-vote-no :rgb(254,246,246) ;
 }
 
@@ -32,7 +32,7 @@ ul{
   display: inline-flex;
   flex-direction: row;
   justify-content: center;
-  border : 2px solid black; 
+  /*border : 2px solid black; */
   max-width: 100%;
   max-height: 390px;
 }
@@ -43,8 +43,12 @@ ul{
   display: flex;  
   flex-direction: column;
   font-weight: bold;
-  
 }
+
+.Cell_Option .Cell_Poll_Header, .Cell_Option_Votes{
+  border-left: 1px solid black;
+}
+
 
 .Cell_Options{
   display: flex;  
@@ -65,15 +69,21 @@ ul{
 .Cell_Option_Vote_No{
   width: var(--cell-width);
 }
-.Cell_New_Participant,.Cell_Option_New_Participant_Vote{
+/*.Cell_New_Participant,.Cell_Option_New_Participant_Vote{
   height: var(--new-participant-height);
-}
+}*/
+
+
 .Cell_Participants_Header,.Cell_Option_Name{
   height: var(--header-height);
 }
-.Cell_Participant_Count,.Cell_Option_Count,
+/*.Cell_Participant_Count,.Cell_Option_Count,
 .Cell_Option_Vote_Yes,.Cell_Option_Vote_No,.Cell_Participant{
   height: var(--cell-height);
+}*/
+
+.Cell_Participant_Count {
+  padding: 1rem;
 }
 
 
@@ -84,19 +94,35 @@ ul{
   padding: var(--cell-padding);
   text-align: center;
   justify-content: center;
-  border: 1px solid black;
+  /*border: 1px solid black;*/
 }
 
-.Cell_Participant,.Cell_New_Participant{
+.Poll_Vote_Content {
+  border: 1px solid #E6E6FF;
+}
+
+/*.Cell_Participant,.Cell_New_Participant{
   padding: var(--cell-padding);
   padding-left: 20%;
   border: 1px solid black;
   text-align: left;
+}*/
+
+.Cell_Option_Name, .Cell_Participants_Header {
+  border-bottom: 1px solid black;
 }
 
+
+.Cell_Participant, .Cell_Vote {
+  height: 50px;
+  padding: 1rem;
+}
+
+
 /*Couleurs*/
-.Cell_New_Participant, .Cell_Option_New_Participant_Vote{
+.Cell_Option_New_Participant_Vote{
   background-color: var(--color-new-participant);
+  padding: 1rem;
 }
 .Cell_Option_Vote_Yes{
   background-color: var(--color-vote-yes)
@@ -109,7 +135,58 @@ ul{
   overflow-y: auto;
 }
 .Cell_Options{
-  overflow-x : auto;
   overflow-y: visible;
+}
 
+
+.Cell_New_Participant_Input {
+  padding: 1rem;
+  height: 100%;
+  box-sizing: border-box;
+  border-radius: 0;
+}
+
+.Cell_New_Participant_Input.error {
+  border: 2px solid #EF4E4E;
+}
+
+.Poll_View_Btn {
+  display: flex;
+  flex: 1;
+  border: 1px solid #1D0EBE;
+  display: flex;
+  color: #4D3DF7;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  font-size: 1.2rem;
+}
+
+.Poll_View_Btn:first-child {
+  border-radius: 5px 0 0 5px;
+}
+
+.Poll_View_Btn:last-child {
+  border-radius: 0 5px 5px 0;
+}
+
+.Poll_View_Btn.active {
+  background-color: #4D3DF7;
+  color: white;
+}
+
+.Poll_Btns {
+  display: flex;
+  margin-bottom: 1rem;  
+}
+
+.Meal_Preferences_Toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  margin-top: 1rem;
 }
