@@ -3,6 +3,7 @@ package com.project.doodle.models;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,12 +20,18 @@ public class Poll {
     private String location;
     private String description;
     private boolean has_meal;
+    private String slug = generateSlug(24);
+    private String slugAdmin = generateSlug(24);
+
 
     @CreationTimestamp
     private Date createdAt;
 
     @OneToMany(cascade = CascadeType.ALL)
     List<Choice> pollChoices;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    List<Comment> pollComments = new ArrayList<>();
 
     public Poll(){}
 
@@ -44,8 +51,20 @@ public class Poll {
         this.pollChoices.remove(choice);
     }
 
+    public void addComment(Comment comment){ this.pollComments.add(comment);}
+
+    public void removeComment(Comment comment){ this.pollComments.remove(comment);}
+
     public Long getId() {
         return id;
+    }
+
+    public List<Comment> getPollComments() {
+        return pollComments;
+    }
+
+    public void setPollComments(List<Comment> pollComments) {
+        this.pollComments = pollComments;
     }
 
     public void setId(Long id) {
@@ -83,6 +102,24 @@ public class Poll {
     public void setHas_meal(boolean has_meal) {
         this.has_meal = has_meal;
     }
+
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public String getSlugAdmin() {
+        return slugAdmin;
+    }
+
+    public void setSlugAdmin(String slugAdmin) {
+        this.slugAdmin = slugAdmin;
+    }
+
 
     public Date getCreatedAt() {
         return createdAt;

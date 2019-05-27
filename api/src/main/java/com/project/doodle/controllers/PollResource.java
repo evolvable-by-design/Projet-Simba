@@ -35,28 +35,39 @@ public class PollResource {
         return new ResponseEntity<>(polls, HttpStatus.OK);
     }
 
-    @GetMapping("/polls/{idPoll}")
-    public ResponseEntity<Poll> retrievePoll(@PathVariable long idPoll) {
+    @GetMapping("/polls/{slug}")
+    public ResponseEntity<Poll> retrievePoll(@PathVariable String slug, @RequestParam(required = false) String token) {
         // On vérifie que le poll existe
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // Si un token est donné, on vérifie qu'il soit bon
+        if (token != null && !poll.get().getSlugAdmin().equals(token)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>(poll.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping("/polls/{idPoll}")
-    public ResponseEntity<Poll> deletePoll(@PathVariable long idPoll) {
+    @DeleteMapping("/polls/{slug}")
+    public ResponseEntity<Poll> deletePoll(@PathVariable String slug, @RequestParam String token) {
         // On vérifie que le poll existe
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // On vérifie que le token soit bon
+        if(!poll.get().getSlugAdmin().equals(token)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         // On supprime tous les choix du poll
         // Fait automatiquement par le cascade type ALL
 
+        // On supprime tous les commentaires du poll
+        // Fait automatiquement par le cascade type ALL
+
         // On supprime le poll de la bdd
-        pollRepository.deleteById(idPoll);
+        pollRepository.deleteById(poll.get().getId());
         return new ResponseEntity<>(poll.get(), HttpStatus.OK);
     }
 
@@ -67,14 +78,20 @@ public class PollResource {
         return new ResponseEntity<>(savedPoll, HttpStatus.CREATED);
     }
 
-    @PutMapping("/polls/{idPoll}")
-    public ResponseEntity<Object> updatePoll(@Valid @RequestBody Poll poll, @PathVariable long idPoll) {
+    @PutMapping("/polls/{slug}")
+    public ResponseEntity<Object> updatePoll(@Valid @RequestBody Poll poll, @PathVariable String slug, @RequestParam String token) {
         // On vérifie que le poll existe
-        Optional<Poll> optionalPoll = pollRepository.findById(idPoll);
+        Optional<Poll> optionalPoll = pollRepository.findBySlug(slug);
         if (!optionalPoll.isPresent())
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        // On vérifie que le token soit bon
+        if(!optionalPoll.get().getSlugAdmin().equals(token)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         // On met au poll le bon id
-        poll.setId(idPoll);
+        poll.setId(optionalPoll.get().getId());
+        poll.setSlug(optionalPoll.get().getSlug());
+        poll.setSlugAdmin(optionalPoll.get().getSlugAdmin());
         // On enregistre le poll dans la bdd
         Poll updatedPoll = pollRepository.save(poll);
         return new ResponseEntity<>(updatedPoll, HttpStatus.OK);

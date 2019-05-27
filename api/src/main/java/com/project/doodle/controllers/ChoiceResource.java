@@ -28,10 +28,10 @@ public class ChoiceResource {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/polls/{idPoll}/choices")
-    public ResponseEntity<List<Choice>> retrieveAllChoicesFromPoll(@PathVariable long idPoll) {
+    @GetMapping("/polls/{slug}/choices")
+    public ResponseEntity<List<Choice>> retrieveAllChoicesFromPoll(@PathVariable String slug) {
         // On vérifie que le choix existe
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -48,10 +48,10 @@ public class ChoiceResource {
         return new ResponseEntity<>(user.get().getUserChoices(), HttpStatus.OK);
     }
 
-    @GetMapping("/polls/{idPoll}/choices/{idChoice}")
-    public ResponseEntity<Choice> retrieveChoiceFromPoll(@PathVariable long idPoll, @PathVariable long idChoice) {
+    @GetMapping("/polls/{slug}/choices/{idChoice}")
+    public ResponseEntity<Choice> retrieveChoiceFromPoll(@PathVariable String slug, @PathVariable long idChoice) {
         // On vérifie que le choix et le poll existent
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         Optional<Choice> choice = choiceRepository.findById(idChoice);
         if (!poll.isPresent() || !choice.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -78,10 +78,10 @@ public class ChoiceResource {
         return new ResponseEntity<>(choice.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping("/polls/{idPoll}/choices/{idChoice}")
-    public ResponseEntity<Choice> deleteChoiceFromPoll(@PathVariable long idPoll, @PathVariable long idChoice) {
+    @DeleteMapping("/polls/{slug}/choices/{idChoice}")
+    public ResponseEntity<Choice> deleteChoiceFromPoll(@PathVariable String slug, @PathVariable long idChoice, @RequestParam String token) {
         // On vérifie que le poll et le choix existent
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         Optional<Choice> choice = choiceRepository.findById(idChoice);
         if (!poll.isPresent() || !choice.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -89,6 +89,10 @@ public class ChoiceResource {
         // On vérifie que le choix appartienne bien au poll
         if(!poll.get().getPollChoices().contains(choice.get())){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        // On vérifie que le token soit bon
+        if(!poll.get().getSlugAdmin().equals(token)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         // On enlève le choix du poll
         poll.get().removeChoice(choice.get());
@@ -103,12 +107,16 @@ public class ChoiceResource {
         return new ResponseEntity<>(choice.get(), HttpStatus.OK);
     }
 
-    @PostMapping("/polls/{idPoll}/choices")
-    public ResponseEntity<List<Choice>> createChoices(@RequestBody List<Choice> choices, @PathVariable long idPoll) {
+    @PostMapping("/polls/{slug}/choices")
+    public ResponseEntity<List<Choice>> createChoices(@RequestBody List<Choice> choices, @PathVariable String slug, @RequestParam String token) {
         // On vérifie que le poll existe
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        // On vérifie que le token soit bon
+        if(!poll.get().getSlugAdmin().equals(token)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         // On ajoute chaque choix au poll et vice versa
         for (Choice choice:choices) {
@@ -118,10 +126,10 @@ public class ChoiceResource {
         return new ResponseEntity<>(choices, HttpStatus.CREATED);
     }
 
-    @PutMapping("/polls/{idPoll}/choices/{idChoice}")
-    public ResponseEntity<Choice> updateChoice(@Valid @RequestBody Choice choice, @PathVariable long idPoll, @PathVariable long idChoice) {
+    @PutMapping("/polls/{slug}/choices/{idChoice}")
+    public ResponseEntity<Choice> updateChoice(@Valid @RequestBody Choice choice, @PathVariable String slug, @PathVariable long idChoice, @RequestParam String token) {
         // On vérifie que le poll et le choix existent
-        Optional<Poll> pollOptional = pollRepository.findById(idPoll);
+        Optional<Poll> pollOptional = pollRepository.findBySlug(slug);
         Optional<Choice> choiceOptional = choiceRepository.findById(idChoice);
         if (!pollOptional.isPresent() || !choiceOptional.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -130,6 +138,10 @@ public class ChoiceResource {
         if(!pollOptional.get().getPollChoices().contains(choiceOptional.get())){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        // On vérifie que le token soit bon
+        if(!pollOptional.get().getSlugAdmin().equals(token)){
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
         // On met le bon id sur le nouveau choix
         choice.setId(idChoice);
         // On update la bdd
@@ -137,11 +149,11 @@ public class ChoiceResource {
         return new ResponseEntity<>(updatedChoice, HttpStatus.OK);
     }
 
-    @PostMapping("/polls/{idPoll}/vote/{idUser}")
-    public ResponseEntity<Object> vote(@RequestBody HashMap<String, List<Long>> choices, @PathVariable long idPoll, @PathVariable long idUser) {
+    @PostMapping("/polls/{slug}/vote/{idUser}")
+    public ResponseEntity<Object> vote(@RequestBody HashMap<String, List<Long>> choices, @PathVariable String slug, @PathVariable long idUser) {
         // On vérifie que le poll et l'utilisateur existent
         List<Long> idchoices = choices.get("choices");
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         Optional<User> user = userRepository.findById(idUser);
         if (!poll.isPresent() || !user.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -167,10 +179,10 @@ public class ChoiceResource {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PostMapping("/polls/{idPoll}/choices/{idChoice}/removevote/{idUser}")
-    public ResponseEntity<Object> removeVote(@PathVariable long idPoll, @PathVariable long idChoice, @PathVariable long idUser) {
+    @PostMapping("/polls/{slug}/choices/{idChoice}/removevote/{idUser}")
+    public ResponseEntity<Object> removeVote(@PathVariable String slug, @PathVariable long idChoice, @PathVariable long idUser) {
         // On vérifie que le poll, le choix et l'utilisateur existent
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         Optional<Choice> choice = choiceRepository.findById(idChoice);
         Optional<User> user = userRepository.findById(idUser);
         if (!poll.isPresent() || !choice.isPresent() || !user.isPresent()){
@@ -193,10 +205,10 @@ public class ChoiceResource {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/polls/{idPoll}/choices/{idChoice}/count")
-    public ResponseEntity<Object> numberOfVoteForChoice(@PathVariable long idPoll,@PathVariable long idChoice){
+    @GetMapping("/polls/{slug}/choices/{idChoice}/count")
+    public ResponseEntity<Object> numberOfVoteForChoice(@PathVariable String slug, @PathVariable long idChoice){
         // On vérifie que le poll et choix existent
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         Optional<Choice> choice = choiceRepository.findById(idChoice);
         if (!poll.isPresent() || !choice.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
