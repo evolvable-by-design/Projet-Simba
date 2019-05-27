@@ -1,0 +1,115 @@
+:root{
+  --header-height : 180px;
+  --participant-width : 230px;
+  --cell-width : 65px;
+  --cell-height: 40px;  
+  --new-participant-height : 65px;
+  --cell-padding : 10px;
+
+  --color-new-participant : rgb(177,217,252);
+  --color-vote-yes : rgb(205,234,161);
+  --color-vote-no :rgb(254,246,246) ;
+}
+
+ul{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+
+.Poll_Has_Meal {
+    display: flex;
+    flex-direction: row;
+  }
+
+.Poll_Vote_Wrapper{
+  display: flex;
+  justify-content:center;
+}
+
+.Poll_Vote_Content{
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  border : 2px solid black; 
+  max-width: 100%;
+  max-height: 390px;
+}
+.Poll_Vote_Scrollable{
+  overflow-y: scroll;
+}
+.Cell_Poll_Header{
+  display: flex;  
+  flex-direction: column;
+  font-weight: bold;
+  
+}
+
+.Cell_Options{
+  display: flex;  
+  flex-direction: row;
+}
+.Cell_Option{
+  display: flex;
+  flex-direction: column;
+}
+
+/*Tailles de cellules*/
+.Cell_Participants_Header,.Cell_Participant_Count,
+.Cell_New_Participant,.Cell_Participant{
+  width: var(--participant-width);
+}
+.Cell_Option_Name,.Cell_Option_Count,
+.Cell_Option_New_Participant_Vote,.Cell_Option_Vote_Yes,
+.Cell_Option_Vote_No{
+  width: var(--cell-width);
+}
+.Cell_New_Participant,.Cell_Option_New_Participant_Vote{
+  height: var(--new-participant-height);
+}
+.Cell_Participants_Header,.Cell_Option_Name{
+  height: var(--header-height);
+}
+.Cell_Participant_Count,.Cell_Option_Count,
+.Cell_Option_Vote_Yes,.Cell_Option_Vote_No,.Cell_Participant{
+  height: var(--cell-height);
+}
+
+
+/* Disposition dans les cellules */
+.Cell_Participants_Header,.Cell_Participant_Count,
+.Cell_Option_Name,.Cell_Option_Count,.Cell_Option_New_Participant_Vote,
+.Cell_Option_Vote_Yes,.Cell_Option_Vote_No{
+  padding: var(--cell-padding);
+  text-align: center;
+  justify-content: center;
+  border: 1px solid black;
+}
+
+.Cell_Participant,.Cell_New_Participant{
+  padding: var(--cell-padding);
+  padding-left: 20%;
+  border: 1px solid black;
+  text-align: left;
+}
+
+/*Couleurs*/
+.Cell_New_Participant, .Cell_Option_New_Participant_Vote{
+  background-color: var(--color-new-participant);
+}
+.Cell_Option_Vote_Yes{
+  background-color: var(--color-vote-yes)
+}
+.Cell_Option_Vote_No{
+  background-color: var(--color-vote-no)
+}
+/* Fixe la premiere colonne et parametrage du scroll*/
+.Poll_Vote_Content{
+  overflow-y: auto;
+}
+.Cell_Options{
+  overflow-x : auto;
+  overflow-y: visible;
+
+}
