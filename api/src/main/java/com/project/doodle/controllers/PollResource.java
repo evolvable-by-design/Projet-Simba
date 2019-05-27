@@ -88,10 +88,25 @@ public class PollResource {
         if(!optionalPoll.get().getSlugAdmin().equals(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        // On met au poll le bon id
-        poll.setId(optionalPoll.get().getId());
-        poll.setSlug(optionalPoll.get().getSlug());
-        poll.setSlugAdmin(optionalPoll.get().getSlugAdmin());
+        // On met au poll le bon id et les bons slugs
+        Poll ancientPoll = optionalPoll.get();
+        poll.setId(ancientPoll.getId());
+        poll.setSlug(ancientPoll.getSlug());
+        poll.setSlugAdmin(ancientPoll.getSlugAdmin());
+        poll.setCreatedAt(ancientPoll.getCreatedAt());
+        poll.setPollChoices(ancientPoll.getPollChoices());
+        poll.setPollComments(ancientPoll.getPollComments());
+        // On met à jour le reste des fields
+        if (poll.getTitle()==null){
+            poll.setTitle(ancientPoll.getTitle());
+        }
+        if (poll.getLocation()==null){
+            poll.setLocation(ancientPoll.getLocation());
+        }
+        if (poll.getDescription()==null){
+            poll.setDescription(ancientPoll.getDescription());
+        }
+
         // On enregistre le poll dans la bdd
         Poll updatedPoll = pollRepository.save(poll);
         return new ResponseEntity<>(updatedPoll, HttpStatus.OK);
