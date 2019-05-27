@@ -137,16 +137,16 @@ public class ChoiceResource {
     }
 
     @PostMapping("/polls/{idPoll}/vote/{idUser}")
-    public ResponseEntity<List<Choice>> vote(@Valid @RequestBody List<Choice> choices, @PathVariable long idPoll, @PathVariable long idUser) {
+    public ResponseEntity<List<Long>> vote(@Valid @RequestBody List<Long> choices, @PathVariable long idPoll, @PathVariable long idUser) {
         // On vérifie que le poll et l'utilisateur existent
         Optional<Poll> poll = pollRepository.findById(idPoll);
         Optional<User> user = userRepository.findById(idUser);
         if (!poll.isPresent() || !user.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        for (Choice choice : choices) {
+        for (long choice : choices) {
             // On vérifie que le choice existe
-            Optional<Choice> optchoice = choiceRepository.findById(choice.getId());
+            Optional<Choice> optchoice = choiceRepository.findById(choice);
             if (!optchoice.isPresent()){
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -159,8 +159,8 @@ public class ChoiceResource {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             // On ajoute le choix à la liste de l'utilisateur et vice versa
-            choice.addUser(user.get());
-            choiceRepository.save(choice);
+            optchoice.get().addUser(user.get());
+            choiceRepository.save(optchoice.get());
         }
         return new ResponseEntity<>(choices, HttpStatus.OK);
     }
