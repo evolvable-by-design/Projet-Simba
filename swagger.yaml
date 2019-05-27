@@ -1,0 +1,578 @@
+openapi: 3.0.0
+info:
+  description: ESIR2 Projet Simba - Smart Doodle
+  version: 1.0.0
+  title: Swagger Projet Simba
+
+
+tags:
+  
+  - name: Users
+
+  - name: Polls
+  
+  - name: Choices
+
+  - name: Votes
+
+
+
+paths:   
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Get all the users
+      description: Get the users list but without password property
+      operationId: retrieveAllUsers
+      responses:
+        '200':
+          description: OK
+
+
+    post:
+      tags:
+         - Users
+      summary: Create a new user
+      operationId: createUser
+      parameters:
+        - in: query
+          name: user
+          schema: 
+            $ref: '#/components/schemas/User'
+          required: true
+          description: properties of the new user to create
+      responses:
+        '201':
+          description: OK
+        '400':
+          description: Bad Request
+          
+  
+  /api/users/{userId}:
+    get:
+      tags: 
+        - Users
+      summary: Get a user
+      description: Get a specific user but without password property
+      operationId: retrieveUser
+      responses: 
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+    parameters:
+      - in: path
+        name: userId
+        schema:
+          type: number
+          format: int64
+        required: true
+        description: ID of the user to get
+          
+    put:
+      tags: 
+        - Users
+      summary: Update a user
+      operationId: updateUser
+      description: Update a user properties (username, password)
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          description: ID of the user to update
+          schema:
+            type: number
+            format: int64
+        - in: query
+          name: user
+          schema:
+            $ref: '#/components/schemas/User'
+          required: true
+          description: the new user properties
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+      
+    delete:
+      tags:
+        - Users
+      summary: Delete a specific user by id
+      operationId: deleteUser
+      description: delete the user from the database, but also from all polls and choices associated to this user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: number
+            format: int64
+          required: true
+          description: ID of the user to delete
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+  /api/polls/{pollId}/users:
+    get:
+      tags:
+        - Users
+      summary: Get all user associated to a specific poll
+      operationId: getAllUserFromPoll
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+
+  /api/polls:
+    get:
+      tags:
+        - Polls
+      summary: Get all polls
+      operationId: retrieveAllpolls
+      responses:
+        '200':
+          description: OK
+
+    post:
+      tags:
+        - Polls
+      summary: Create a new poll
+      operationId: createPoll
+      parameters:
+        - in: query
+          name: poll
+          schema: 
+            $ref: '#/components/schemas/Poll'
+          required: true
+          description: the properties of the poll to create
+      responses:
+        '201': 
+          description: Created
+        '400':
+          description: Bad Request
+
+
+  
+  /api/polls/{pollId}:
+    get: 
+      tags:
+        - Polls
+      summary: Get a specific poll by id
+      operationId: retrievePoll
+      parameters:
+        - in: path
+          name: pollId
+          schema: 
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+    
+
+    put:
+      tags: 
+        - Polls
+      summary: Update a specific poll
+      operationId: updatePoll
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: query
+          name: poll
+          schema:
+            $ref: '#/components/schemas/Poll'
+          required: true
+          description: the new properties of the poll to update
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found          
+
+
+    delete: 
+      tags:
+        - Polls
+      summary: Delete a specific poll
+      operationId: deletePoll
+      parameters: 
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+
+
+
+
+  /api/polls/{pollId}/choices:
+    get:
+      tags:
+        - Choices
+      summary: Get all choices associated to a specific poll
+      operationId: retrieveAllChoicesFromPoll
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+    post:
+      tags: 
+        - Choices
+      summary: Create new choices for a specific poll
+      operationId: createChoices
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: query
+          name: choices
+          schema:
+            type: List<Choice>
+            $ref: '#/components/schemas/Choice'
+          required: true
+      responses:
+        '201':
+          description: Created
+        '400':
+          description: Bad Request
+
+  
+  /api/users/{userId}/choices:
+    get:
+      tags:
+        - Choices
+      operationId: retrieveAllChoicesFromUser
+      summary: Get all choices associated to a specific user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+  /api/users/{userId}/choices/{choiceId}:
+    get:
+      tags:
+       - Choices
+      operationId: retrieveChoiceFromUser
+      summary: Get a specific choice associated to a specific user
+      parameters:
+        - in: path
+          name: userId
+          schema: 
+            type: number
+            format: int64
+          required: true
+        - in: path
+          name: choiceId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+
+  
+      
+
+  /api/polls/{pollId}/choices/{choiceId}:
+    get:
+      tags:
+        - Choices
+      operationId: retrieveChoiceFromPoll
+      summary: Get a specific choice associated to a specific poll
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: path
+          name: choiceId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+    put:
+      tags:
+        - Choices
+      operationId: updateChoice
+      summary: Update a choice associated to a specific poll
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: path
+          name: choiceId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: query
+          name: choice
+          schema:
+            $ref: '#/components/schemas/Choice'
+          required: true
+          description: the new properties of the choice to update
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+    delete:
+      tags:
+        - Choices
+      operationId: deleteChoiceFromPoll
+      summary: Delete a specific choice associated to a specific poll
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: path
+          name: choiceId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+    
+
+
+
+  /api/polls/{pollId}/vote/{userId}:
+    get:
+      tags:
+        - Votes
+      operationId: vote
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: path
+          name: userId
+          schema: 
+            type: number
+            format: int64
+          required: true
+        - in: query
+          name: choices
+          schema:
+            type: HashMap<String, List<Long>>
+            format: HashMap<String, List<Long>>
+          required: true 
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      
+  /api/polls/{pollId}/choices/{choiceId}/count:
+    get:
+      tags:
+        - Votes
+      operationId: numberOfVoteForChoice
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: path
+          name: choiceId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+
+  /api/polls/{pollId}/choices/{choiceId}/removevote/{userId}:
+    post:
+      tags: 
+        - Votes
+      operationId: removeVote
+      parameters:
+        - in: path
+          name: pollId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: path
+          name: choiceId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: path
+          name: userId
+          schema: 
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+
+
+          
+
+
+
+
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id: 
+          type: number
+          format: uuid
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        created_at:
+          type: string
+          format: date-time
+        userChoices:
+          type: List<Choice>
+        userPolls:
+          type: List<Poll>
+    
+    Choice:
+      type: object
+      properties:
+        id:
+          type: number
+          format: uuid
+        name:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        poll:
+          type: Poll
+        users:
+          type: List<Users>
+    
+    Poll:
+      type: object
+      properties:
+        id:
+          type: number
+          format: uuid
+        slug:
+          type: string
+        title:
+          type: string
+        location:
+          type: string 
+        description:
+          type: string
+        has_meal:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        poll_choices:
+          type: List<Choice>
+        pollUsers:
+          type: List<User>
+
+
+        
+
+
+
