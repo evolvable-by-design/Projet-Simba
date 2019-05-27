@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,14 +138,15 @@ public class ChoiceResource {
     }
 
     @PostMapping("/polls/{idPoll}/vote/{idUser}")
-    public ResponseEntity<Object> vote(@RequestBody List<Long> choices, @PathVariable long idPoll, @PathVariable long idUser) {
+    public ResponseEntity<Object> vote(@RequestBody HashMap<String, List<Long>> choices, @PathVariable long idPoll, @PathVariable long idUser) {
         // On vérifie que le poll et l'utilisateur existent
+        List<Long> idchoices = choices.get("choices");
         Optional<Poll> poll = pollRepository.findById(idPoll);
         Optional<User> user = userRepository.findById(idUser);
         if (!poll.isPresent() || !user.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        for (Long choice : choices) {
+        for (Long choice : idchoices) {
             // On vérifie que le choice existe
             Optional<Choice> optchoice = choiceRepository.findById(choice);
             if (!optchoice.isPresent()){
