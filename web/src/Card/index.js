@@ -6,7 +6,7 @@ const Card = ({title, subtitle, children, footer}) => {
     <div className="Card_Container">
       <div className="Card_Header">
         <h1>{ title }</h1>
-        <small>{ subtitle }</small>
+        <div className="Card_Header_Subtitle">{ subtitle }</div>
       </div>
       <div className="Card_Content">
         { children }

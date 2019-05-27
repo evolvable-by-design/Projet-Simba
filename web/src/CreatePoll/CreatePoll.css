@@ -58,6 +58,7 @@ input:focus, textarea:focus {
 
 .rbc-event {
   background-color: #4D3DF7;
+  border: none;
 }
 
 .rbc-today {
@@ -132,4 +133,9 @@ input:checked + .slider:before {
 
 .CreatePoll_Switch span {
   margin-right: 2rem;
+}
+
+
+.Poll_Link {
+  font-size: 1.2rem;
 }

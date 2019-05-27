@@ -2,12 +2,14 @@ import React, { useState } from 'react'
 import { Wizard, Steps, Step } from 'react-albus';
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
+import axios from 'axios';
 import 'moment/locale/fr'
+import { Link } from 'react-router-dom'
 
 import Card from '../Card';
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CreatePoll.css'
-import axios from 'axios';
+import {BASE_URL, CALENDAR_MESSAGES} from '../utils/constants'
 
 const Informations = ({next, title, location, description, setLocation, setTitle, setDescription, hasMeal, setMeal}) => {
 
@@ -50,10 +52,10 @@ const Informations = ({next, title, location, description, setLocation, setTitle
           </textarea>
         </div>
         <div className="CreatePoll_Input CreatePoll_Switch">
-          <span>Le meeting comprend un repas :</span>
-          <label class="switch" for="hasMeal">
+          <span>Cet événement contient un repas :</span>
+          <label className="switch" htmlFor="hasMeal">
             <input id="hasMeal" type="checkbox" checked={hasMeal} onChange={(e) => setMeal(e.target.checked)} value="Doit-on inclure un repas ?"/>
-            <div class="slider round"></div>
+            <div className="slider round"></div>
           </label>
         </div>
       </div>
@@ -70,22 +72,8 @@ const sameDay = (d1, d2) => {
     d1.getDate() === d2.getDate();
 }
 
-const messages = {
-  allDay: 'journée',
-  previous: 'précédent',
-  next: 'suivant',
-  today: 'aujourd\'hui',
-  month: 'mois',
-  week: 'semaine',
-  day: 'jour',
-  agenda: 'Agenda',
-  date: 'date',
-  time: 'heure',
-  event: 'événement', // Or anything you want
-  showMore: total => `+ ${total} événement(s) supplémentaire(s)`
-}
 
-const Choices = ({next, previous, choices, setChoices, createPoll}) => {
+const Choices = ({next, previous, choices, setChoices, createPoll, buttonName}) => {
 
   const handleCreate = ({start, end}) => {
     if(!sameDay(start, end)) return
@@ -98,12 +86,17 @@ const Choices = ({next, previous, choices, setChoices, createPoll}) => {
     setChoices(newChoices)
   }
 
+  const handleVote = () => {
+    createPoll()
+    next()
+  }
+
   const footer = (
     <div className="CreatePoll_Buttons">
       { previous && 
         <button className="Btn-primary" onClick={previous}>Précedent</button>
       }
-      <button className="Btn-primary" onClick={createPoll}>Créer</button>
+      <button className="Btn-primary" onClick={handleVote}>{buttonName}</button>
     </div>
   )
 
@@ -118,10 +111,23 @@ const Choices = ({next, previous, choices, setChoices, createPoll}) => {
         startAccessor="start"
         endAccessor="end"
         defaultView="week"
-        messages={messages}
+        messages={CALENDAR_MESSAGES}
         onSelectSlot={handleCreate}
         onSelectEvent={handleSelect}
       />
+    </Card>
+  )
+}
+
+const Recap = (props) => {
+  return (
+    <Card title="Récapitulatif">
+      <div>
+      <Link className="Link Poll_Link" to={`/polls/${props.data.slug}`}>{`/polls/${props.data.slug}`} - Lien vers le poll</Link>
+      </div>
+      <div>
+      <Link className="Link Poll_Link" to={`/polls/${props.data.slug}?t=${props.data.slugAdmin}`}>{`/polls/${props.data.slug}`} - Lien vers l'administration du poll</Link>
+      </div>
     </Card>
   )
 }
@@ -134,6 +140,8 @@ const CreatePoll = (props) => {
 
   const [choices, setChoices] = useState([])
 
+  const [data, setData] = useState({})
+
   const createPoll = () => {
 
     const sendChoices = choices.map((choice) => {
@@ -144,15 +152,16 @@ const CreatePoll = (props) => {
       }
     })
 
-    axios.post('http://localhost:7777/api/polls', {
+    axios.post(`${BASE_URL}/polls`, {
       title,
       description,
       location,
       pollChoices: sendChoices,
-      hasMeal,
+      has_meal: hasMeal,
     }).then(res => {
       if(res.status === 201) {
-        props.history.push(`/polls/${res.data.id}`)
+        //props.history.push(`/polls/${res.data.slug}`)
+        setData(res.data)
       }
     })
   }
@@ -160,6 +169,9 @@ const CreatePoll = (props) => {
   return (
     <>
     <div className="Container">
+      <h1>
+        Création d'un poll
+      </h1>
       <Wizard>
       <Steps>
         <Step
@@ -171,7 +183,13 @@ const CreatePoll = (props) => {
         <Step
           id="choices"
           render={(nav) => (
-            <Choices {...nav} choices={choices} setChoices={setChoices} createPoll={createPoll}/>
+            <Choices {...nav} choices={choices} setChoices={setChoices} createPoll={createPoll} buttonName="Créer"/>
+          )}
+        />
+        <Step
+          id="poll"
+          render={(nav) => (
+            <Recap data={data} />
           )}
         />
         </Steps>
@@ -183,3 +201,4 @@ const CreatePoll = (props) => {
 }
 
 export default CreatePoll
+export { Informations, Choices}

@@ -47,11 +47,11 @@ public class UserResource {
         return new ResponseEntity<>(user.get(), HttpStatus.OK);
     }
 
-    @GetMapping("/polls/{idPoll}/users")
-    public ResponseEntity<List<User>> getAllUserFromPoll(@PathVariable long idPoll){
+    @GetMapping("/polls/{slug}/users")
+    public ResponseEntity<List<User>> getAllUserFromPoll(@PathVariable String slug){
         List<User> users = new ArrayList<>();
         // On vérifie que le poll existe
-        Optional<Poll> poll = pollRepository.findById(idPoll);
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -83,6 +83,7 @@ public class UserResource {
             choice.removeUser(user.get());
             choiceRepository.save(choice);
         }
+
         // On supprime l'utilisateur de la bdd
         userRepository.deleteById(idUser);
         return new ResponseEntity<>(user.get(), HttpStatus.OK);
