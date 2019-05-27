@@ -103,7 +103,7 @@ public class ChoiceResource {
     }
 
     @PostMapping("/polls/{idPoll}/choices")
-    public ResponseEntity<List<Choice>> createChoices(@Valid @RequestBody List<Choice> choices, @PathVariable long idPoll) {
+    public ResponseEntity<List<Choice>> createChoices(@RequestBody List<Choice> choices, @PathVariable long idPoll) {
         // On vérifie que le poll existe
         Optional<Poll> poll = pollRepository.findById(idPoll);
         if (!poll.isPresent()){
