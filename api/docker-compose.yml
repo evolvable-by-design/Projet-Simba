@@ -1,28 +1,38 @@
 version: '3'
 services:
   mydb:
-    hostname : quarkus
-    image: postgres
-    container_name: pg_container
+    image: mysql:latest
+    container_name: mysql-docker-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'doodle'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - my-db:/var/lib/mysql
 
     ports:
-      - 5432:5432
+      - 3306:3306
+    expose:
+      - 3306
+
   server:
     build: .
-    image: quarkus/api
-    container_name: api
+    image: simba
+    container_name: simbaProject
+    restart: always
     links:
-      - mydb
+      - mydb:mydb
     environment:
 
-      - PGPASSWORD=root
-      - PGUSER=root
-      - PGDATABASE=simba
-      - PGHOST=database
-      - PGPORT=5432
-    depends_on: 
+      - DATABASE_HOST=mydb
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=doodle
+      - DATABASE_PORT=3306
+    depends_on:
       - mydb
     ports : 
       - 8080:8080
@@ -32,9 +42,9 @@ services:
  #      "
 
     #entrypoint: ["./work/application/","-Dquarkus.http.host=0.0.0.0", "-Dquarkus.datasource.url=jdbc:postgresql://postgres:5432/simba", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"]
-volumes: 
-  db-data: {} 
-     # driver: local
+volumes:
+  my-db:
+      driver: local
    
   
     
