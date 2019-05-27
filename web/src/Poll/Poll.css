@@ -21,6 +21,7 @@ ul{
 .Poll_Has_Meal {
     display: flex;
     flex-direction: row;
+    flex: 1;
   }
 
 .Poll_Vote_Wrapper{
@@ -35,10 +36,9 @@ ul{
   /*border : 2px solid black; */
   max-width: 100%;
   max-height: 390px;
-}
-.Poll_Vote_Scrollable{
   overflow-y: scroll;
 }
+
 .Cell_Poll_Header{
   display: flex;  
   flex-direction: column;
@@ -74,7 +74,7 @@ ul{
 }*/
 
 
-.Cell_Participants_Header,.Cell_Option_Name{
+.Cell_Participants_Header,.Cell_Option_Name, .Cell_Header_Name{
   height: var(--header-height);
 }
 /*.Cell_Participant_Count,.Cell_Option_Count,
@@ -116,6 +116,7 @@ ul{
 .Cell_Participant, .Cell_Vote {
   height: 50px;
   padding: 1rem;
+  width: 65px;
 }
 
 
@@ -131,11 +132,9 @@ ul{
   background-color: var(--color-vote-no)
 }
 /* Fixe la premiere colonne et parametrage du scroll*/
-.Poll_Vote_Content{
-  overflow-y: auto;
-}
+
 .Cell_Options{
-  overflow-y: visible;
+  overflow-x: scroll;
 }
 
 
@@ -152,7 +151,7 @@ ul{
 
 .Poll_View_Btn {
   display: flex;
-  flex: 1;
+  flex: 1 1;
   border: 1px solid #1D0EBE;
   display: flex;
   color: #4D3DF7;
@@ -160,9 +159,9 @@ ul{
   justify-content: center;
   outline: none;
   cursor: pointer;
-  font-weight: 600;
-  padding: 0.5rem 1.5rem;
-  font-size: 1.2rem;
+  font-weight: 500;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
 }
 
 .Poll_View_Btn:first-child {
@@ -189,4 +188,82 @@ ul{
   align-items: center;
   padding: 1rem;
   margin-top: 1rem;
+}
+
+.Poll_Location {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.feather {
+  margin-right: 1rem;
+}
+
+.Cell_Header {
+  width: var(--participant-width);
+}
+
+.Poll_Has_Meal {
+  display: flex;
+  align-items: center;
+}
+
+.Poll_Description_Title {
+  font-size: 0.8rem;
+  color: #243B53;
+}
+
+.Poll_Infos {
+  display: flex;
+}
+
+.Poll_Info {
+  flex: 1;
+}
+
+.green {
+  background-color:  #199473;
+}
+
+.green:hover {
+  background-color:  #147D64;
+}
+
+.Poll_Vote_Action {
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+.Cell_Poll_Header.Cell_Option_Name {
+  width: 100%!important;
+}
+
+.selected {
+  background-color: #65D6AD;
+  color: #014D40;
+}
+
+.Poll_Subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 1rem;
+}
+
+.Edit_Link {
+  margin-left: 1rem;
+  font-weight: 500;
+  color: #4d3cf7;
+  text-decoration: none;
+}
+
+.Link {
+  text-decoration: none;
+  color: #4d3cf7;
+}
+
+.Link:hover {
+  text-decoration: underline;
 }
