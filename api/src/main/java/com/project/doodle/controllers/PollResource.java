@@ -1,12 +1,8 @@
 package com.project.doodle.controllers;
 
-import com.project.doodle.features.PadFeature;
-import com.project.doodle.models.Choice;
 import com.project.doodle.models.Poll;
-import com.project.doodle.models.User;
-import com.project.doodle.repositories.ChoiceRepository;
 import com.project.doodle.repositories.PollRepository;
-import com.project.doodle.repositories.UserRepository;
+import net.gjerull.etherpad.client.EPLiteClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -17,17 +13,19 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
+import static com.project.doodle.Utils.generateSlug;
+
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/api")
 public class PollResource {
 
     @Autowired
-    private ChoiceRepository choiceRepository;
-    @Autowired
     private PollRepository pollRepository;
-    @Autowired
-    private UserRepository userRepository;
+
+    private final String padUrl = "http://localhost:9001/";
+    private final String apikey = "fa8cce291d03acaf1dce7d137f73ce60aa2eeebdec77be42bcb8461d0e4278ea";
+    private EPLiteClient client = new EPLiteClient(padUrl, apikey);
 
     @GetMapping("/polls")
     public ResponseEntity<List<Poll>> retrieveAllpolls() {
@@ -77,6 +75,8 @@ public class PollResource {
         // On supprime tous les commentaires du poll
         // Fait automatiquement par le cascade type ALL
 
+        // On supprime le pad
+        client.deletePad(getPadId(poll.get()));
         // On supprime le poll de la bdd
         pollRepository.deleteById(poll.get().getId());
         return new ResponseEntity<>(poll.get(), HttpStatus.OK);
@@ -85,9 +85,10 @@ public class PollResource {
     @PostMapping("/polls")
     public ResponseEntity<Poll> createPoll(@Valid @RequestBody Poll poll) {
         // On enregistre le poll dans la bdd
-        PadFeature pad = new PadFeature(poll.getTitle());
-        pad.init();
-        poll.setPadURL(pad.getPadUrl());
+        String padId = generateSlug(6);
+        client.createPad(padId);
+        initPad(poll.getTitle(), poll.getLocation(), poll.getDescription(), client, padId);
+        poll.setPadURL(padUrl+"p/"+padId);
         Poll savedPoll = pollRepository.save(poll);
         return new ResponseEntity<>(savedPoll, HttpStatus.CREATED);
     }
@@ -104,6 +105,14 @@ public class PollResource {
         }
         // On met au poll le bon id et les bons slugs
         Poll ancientPoll = optionalPoll.get();
+        // On se connecte au pad
+        String padId = getPadId(ancientPoll);
+
+        // On sauvegarde les anciennes données pour mettre à jour le pad
+        String title = ancientPoll.getTitle();
+        String location = ancientPoll.getLocation();
+        String description = ancientPoll.getDescription();
+
         // On met à jour l'ancien poll
         if (poll.getTitle()!=null){
             ancientPoll.setTitle(poll.getTitle());
@@ -115,8 +124,25 @@ public class PollResource {
             ancientPoll.setDescription(poll.getDescription());
         }
         ancientPoll.setHas_meal(poll.isHas_meal());
+        // On update le pad
+        String ancientPad = (String) client.getText(padId).get("text");
+        ancientPad = ancientPad.replaceFirst(title, ancientPoll.getTitle());
+        ancientPad = ancientPad.replaceFirst(location, ancientPoll.getLocation());
+        ancientPad = ancientPad.replaceFirst(description, ancientPoll.getDescription());
+        client.setText(padId, ancientPad);
         // On enregistre le poll dans la bdd
         Poll updatedPoll = pollRepository.save(ancientPoll);
         return new ResponseEntity<>(updatedPoll, HttpStatus.OK);
+    }
+
+    private static void initPad(String pollTitle, String pollLocation, String pollDescription, EPLiteClient client, String padId) {
+        final String str = pollTitle+'\n'+
+                "Localisation : "+pollLocation+'\n'+
+                "Description : "+pollDescription+'\n';
+        client.setText(padId, str);
+    }
+
+    private static String getPadId(Poll poll){
+        return poll.getPadURL().substring(poll.getPadURL().length()-6);
     }
 }

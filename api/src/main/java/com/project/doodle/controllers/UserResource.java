@@ -29,7 +29,6 @@ public class UserResource {
     @Autowired
     private UserRepository userRepository;
 
-
     @GetMapping("/users")
     public ResponseEntity<List<User>> retrieveAllUsers() {
         // On récupère tous les utilisateurs qu'on trie ensuite par username
