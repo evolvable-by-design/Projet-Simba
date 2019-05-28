@@ -38,6 +38,9 @@ public class Poll {
     @OneToMany(cascade = CascadeType.ALL)
     List<Comment> pollComments = new ArrayList<>();
 
+    @OneToMany(cascade = CascadeType.ALL)
+    List<MealPreference> pollMealPreferences = new ArrayList<>();
+
     private String padURL;
 
     public Poll(){}
@@ -62,12 +65,24 @@ public class Poll {
 
     public void removeComment(Comment comment){ this.pollComments.remove(comment);}
 
+    public void addMealPreference(MealPreference mealPreference){ this.pollMealPreferences.add(mealPreference);}
+
+    public void removeComment(MealPreference mealPreference){ this.pollMealPreferences.remove(mealPreference);}
+
     public Long getId() {
         return id;
     }
 
     public List<Comment> getPollComments() {
         return pollComments;
+    }
+
+    public List<MealPreference> getPollMealPreferences() {
+        return pollMealPreferences;
+    }
+
+    public void setPollMealPreferences(List<MealPreference> pollMealPreferences) {
+        this.pollMealPreferences = pollMealPreferences;
     }
 
     public void setPollComments(List<Comment> pollComments) {

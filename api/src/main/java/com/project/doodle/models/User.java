@@ -25,6 +25,10 @@ public class User {
     @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
     List<Comment> userComments = new ArrayList<>();
 
+    @JsonIgnore
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+    List<MealPreference> userMealPreferences = new ArrayList<>();
+
     public User(){}
 
     public User(String username) {
@@ -42,6 +46,10 @@ public class User {
     public void addComment (Comment comment) {this.userComments.add(comment);}
 
     public void removeComment (Comment comment) {this.userComments.remove(comment);}
+
+    public void addMealPreference (MealPreference mealPreference) {this.userMealPreferences.add(mealPreference);}
+
+    public void removeMealPreference (MealPreference mealPreference) {this.userMealPreferences.remove(mealPreference);}
 
     public Long getId() {
         return id;
@@ -61,6 +69,14 @@ public class User {
 
     public List<Choice> getUserChoices() {
         return userChoices;
+    }
+
+    public List<MealPreference> getUserMealPreferences() {
+        return userMealPreferences;
+    }
+
+    public void setUserMealPreferences(List<MealPreference> userMealPreferences) {
+        this.userMealPreferences = userMealPreferences;
     }
 
     public void setUserChoices(List<Choice> userChoices) {
