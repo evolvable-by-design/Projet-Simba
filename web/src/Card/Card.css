@@ -1,6 +1,5 @@
 .Card_Container {
   background-color: white;
-  border: 1px solid #D9E2EC;
   border-radius: 5px;
   color: #242424;
   width: 800px;
@@ -9,7 +8,7 @@
 
 .Card_Header {
   padding: 1rem;
-  border-bottom: 2px solid #4D3DF7;
+  border-bottom: 2px solid #F0F4F8;
   color: #243B53;
   text-align: end;
 }

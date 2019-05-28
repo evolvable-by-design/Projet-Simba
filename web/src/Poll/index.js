@@ -34,7 +34,7 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers}) => {
     /*if(choices.indexOf(choice.id) !== -1){
       title += "✅"
     }*/
-    return {start: new Date(choice.start_date), end: new Date(choice.end_date), title: title, resource: choice.id}
+    return {start: new Date(choice.startDate), end: new Date(choice.endDate), title: title, resource: choice.id}
   }) 
 
   const handleSelectEvent = (e) => {
@@ -91,15 +91,17 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers}) => {
 
   const subtitle = (id) => (
     <div className="Poll_Subtitle">
+      <div>
       <span>Créé {moment(data.createdAt).fromNow()}</span>
       { adminToken &&
         <Link className="Edit_Link" to={`/polls/${slug}/edit?t=${adminToken}`}>Modifier</Link>
       }
+      </div>
     </div>
   )
 
   return (
-    <Card title={data.title} subtitle={subtitle(slug)} footer={footer}>
+    <Card title={data.title} subtitle={subtitle(slug)} footer={footer} style={{borderRadius: "5px 0 5px 5px", borderTop: "2px solid #4D3DF7"}}>
       <div className="Poll_Form">
         { data.description && 
           <div className="Poll_Description">
@@ -190,19 +192,16 @@ const PollTable = (props) => {
   )
 }
 
-const Choices = ({data, setChoices, choices, users, error, username, setUsername}) =>{
+const Choices = ({data, setChoices, choices, users, usernameError: error, username, setUsername}) =>{
 
-  const handleVote = (e, id) => {
-    let checked = e.target.checked
-    if(checked) {
+  const handleVote = (id) => {
+    const index = choices.indexOf(id)
+    if(index === -1) {
       setChoices([...choices, id])
     } else {
-      const index = choices.indexOf(id)
-      if(index !== -1) {
-        let newChoices = [...choices]
-        newChoices.splice(index, 1)
-        setChoices(newChoices)
-      }
+      let newChoices = [...choices]
+      newChoices.splice(index, 1)
+      setChoices(newChoices)
     }
   }
 
@@ -238,23 +237,31 @@ const Choices = ({data, setChoices, choices, users, error, username, setUsername
             <li className="Cell_Option" key={choice.id}>
               <div className="Cell_Poll_Header">
                 <div className="Cell_Option_Name">
-                  {moment(choice.start_date).format('Do MMMM h:mm')} - {moment(choice.end_date).format('h:mm')}
+                  <div className="Cell_Day">
+                  {moment(choice.startDate).format('Do MMMM')}
+                  </div>
+                  <div className="Poll_Date">
+                    <div className="Poll_Start_Date">{moment(choice.startDate).format('H:mm')}</div>
+                    <div className="Poll_Separator">-</div>
+                    <div className="Poll_Start_Date">{moment(choice.endDate).format('H:mm')}</div>
+                  </div>
                 </div>
                 <div className="Cell_Option_Count">
                   <span>{choice.users.length}</span>
                 </div>
                 <div className="Cell_Option_New_Participant_Vote">
-                  <input type="checkbox" checked={choices.indexOf(choice.id) !== -1} onChange={(e) => handleVote(e, choice.id)}/>
+                    <button className={"Checkbox_Btn" + (choices.indexOf(choice.id) !== -1 ? " Active" : "")} onClick={(e) => handleVote(choice.id)}>{choices.indexOf(choice.id) !== -1 && 
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    }
+                    </button>
+                  { false && <input type="checkbox" checked={choices.indexOf(choice.id) !== -1} onChange={(e) => handleVote(choice.id)}/>}
                 </div>
               </div>
               <ul className="Cell_Option_Votes">
                 { users && users.map((user)=> (
                   <li key={user.id} className={"Cell_Vote" + (usersChoice[choice.id].indexOf(user.id) === -1 ? "" : " selected")}>
                     { usersChoice[choice.id].indexOf(user.id) !== -1 && 
-                      <span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-                    }
-                    { usersChoice[choice.id].indexOf(user.id) === -1 &&
-                      <p>&nbsp;</p>
+                      <span><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
                     }
                   </li>
                 )
@@ -300,6 +307,15 @@ const Poll = (props) => {
 
   return (
     <div className="Container">
+      <div className="Links">
+        <a href={data.padURL} className="Feat_Link" target="_blank" rel="noopener noreferrer">
+          <svg xmlns="http://www.w3.org/2000/svg" style={{marginRight: "0.5rem"}} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-paperclip"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+          Pad
+        </a>
+        <a href={`${BASE_URL}/polls/${slug}/results`} className="Feat_Link" target="_blank" rel="noopener noreferrer">
+        <svg xmlns="http://www.w3.org/2000/svg" style={{marginRight: "0.5rem"}} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Exporter</a>
+      </div>
       <Informations adminToken={token} slug={slug} data={data} users={users} refreshDataAndUsers={refreshDataAndUsers}/>
     </div>
   )

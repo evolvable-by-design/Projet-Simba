@@ -73,6 +73,10 @@ ul{
   height: var(--new-participant-height);
 }*/
 
+.Cell_Option_New_Participant_Vote {
+  height: 50px;
+}
+
 
 .Cell_Participants_Header,.Cell_Option_Name, .Cell_Header_Name{
   height: var(--header-height);
@@ -89,7 +93,7 @@ ul{
 
 /* Disposition dans les cellules */
 .Cell_Participants_Header,.Cell_Participant_Count,
-.Cell_Option_Name,.Cell_Option_Count,.Cell_Option_New_Participant_Vote,
+.Cell_Option_Count,
 .Cell_Option_Vote_Yes,.Cell_Option_Vote_No{
   padding: var(--cell-padding);
   text-align: center;
@@ -116,14 +120,15 @@ ul{
 .Cell_Participant, .Cell_Vote {
   height: 50px;
   padding: 1rem;
-  width: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
 /*Couleurs*/
 .Cell_Option_New_Participant_Vote{
   background-color: var(--color-new-participant);
-  padding: 1rem;
 }
 .Cell_Option_Vote_Yes{
   background-color: var(--color-vote-yes)
@@ -139,10 +144,10 @@ ul{
 
 
 .Cell_New_Participant_Input {
-  padding: 1rem;
   height: 100%;
   box-sizing: border-box;
   border-radius: 0;
+  padding: 10px;
 }
 
 .Cell_New_Participant_Input.error {
@@ -248,8 +253,14 @@ ul{
 .Poll_Subtitle {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   font-size: 1rem;
+  margin-top: 1.5rem;
+}
+
+.Pad_Url {
+  display: flex;
+  align-items: center;
 }
 
 .Edit_Link {
@@ -259,6 +270,10 @@ ul{
   text-decoration: none;
 }
 
+.Edit_Link:hover {
+  color: #1D0EBE;
+}
+
 .Link {
   text-decoration: none;
   color: #4d3cf7;
@@ -266,4 +281,72 @@ ul{
 
 .Link:hover {
   text-decoration: underline;
+}
+
+.Cell_Day {
+  background-color: #4d3cf7;
+  color: white;
+  padding: 1rem;
+  text-align: center; 
+}
+
+.Poll_Start_Date {
+  padding: 5px;
+}
+
+.Poll_Date {
+  text-align: center;
+  padding: 8px;
+  color: #4d3cf7;
+}
+
+.Checkbox_Btn {
+  width: 65px;
+  height: 50px;
+  border: none;
+  outline: none;
+  text-align: center;
+  transition: background-color 0.3s linear;
+  border: 1px solid #4d3cf7; 
+}
+
+.Checkbox_Btn.Active {
+  background-color: #4d3cf7;
+  color: white;
+}
+
+.Cell_New_Participant {
+  height: 50px;
+}
+
+
+.Links {
+  display: flex;
+  align-self: flex-end;
+  background: #4D3DF7;
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
+}
+
+.Feat_Link {
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s linear;
+  cursor: pointer;
+}
+
+.Feat_Link:first-child {
+  border-radius: 10px 0 0 0;
+}
+
+.Feat_Link:last-child {
+  border-radius: 0 10px 0 0;
+}
+
+
+.Feat_Link:hover {
+  background-color: #0C008C;
 }

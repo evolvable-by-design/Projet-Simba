@@ -138,4 +138,22 @@ input:checked + .slider:before {
 
 .Poll_Link {
   font-size: 1.2rem;
+  margin-right: 1rem;
+}
+
+.Recap_Link {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.Copy_Link {
+  border: none;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+}
+
+.text-green {
+  color: #199473;
 }

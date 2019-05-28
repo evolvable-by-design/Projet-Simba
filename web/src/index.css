@@ -2,14 +2,19 @@
   box-sizing: border-box;
 }
 
+html, 
+body {
+    height: 100%;
+}
+
 body {
   background-color: #F0F4F8;
   color: #303030;
   font-family: 'Roboto', sans-serif;
 }
 
-h1 {
-
+#root {
+  height: 100%;
 }
 
 .Btn-primary {
