@@ -36,12 +36,12 @@ services:
       - mydb
     ports : 
       - 8080:8080
- #   command: >
- #     /bin/sh -c "
- #       ./api-1.0-SNAPSHOT-runner -Dquarkus.http.host=0.0.0.0 -Dquarkus.datasource.url=mydb:5432
- #      "
-
-    #entrypoint: ["./work/application/","-Dquarkus.http.host=0.0.0.0", "-Dquarkus.datasource.url=jdbc:postgresql://postgres:5432/simba", "-Djava.util.logging.manager=org.jboss.logmanager.LogManager"]
+  etherpad:
+    image: etherpad/etherpad
+    environment:
+      - ETHERPAD_API_KEY: "/APIKEY.txt"
+    ports:
+      - 9001:9001
 volumes:
   my-db:
       driver: local

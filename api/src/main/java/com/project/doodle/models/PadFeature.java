@@ -26,7 +26,7 @@ public class PadFeature {
 
 
         public static void main(String[] args) {
-            PadFeature pad = new PadFeature("http://localhost:9001/", apikey, "idrrf");
+            PadFeature pad = new PadFeature("http://localhost:9001/", "key", "ertghj");
             pad.addUser("Anne");
             pad.addUser("moi");
             pad.addUser("toi");
