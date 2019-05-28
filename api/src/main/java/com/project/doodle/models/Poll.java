@@ -1,6 +1,5 @@
 package com.project.doodle.models;
 
-import com.project.doodle.features.PadFeature;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -33,6 +32,7 @@ public class Poll {
     private Date updatedAt;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @OrderBy("startDate ASC")
     List<Choice> pollChoices;
 
     @OneToMany(cascade = CascadeType.ALL)

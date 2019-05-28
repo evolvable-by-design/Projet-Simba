@@ -9,5 +9,4 @@ import java.util.Optional;
 @Repository
 public interface PollRepository extends JpaRepository<Poll, Long> {
     Optional<Poll> findBySlug(String slug);
-    Optional<Poll> findBySlugAdmin(String slugAdmin);
 }
