@@ -71,6 +71,10 @@ public class ExportResource {
         return getHttpEntityToDownload(filePath,"pdf");
     }
 
+    private String convertToPdf(String filePath){
+        return "";
+    }
+
     static int beginningColumnCell = 0;
     static int beginningRowCell = 3;
     private String createExcelFile(Poll poll,String slug) throws IOException{
@@ -187,7 +191,7 @@ public class ExportResource {
 
        // On recupère la date de début
        Choice choice=choices.get(i);
-       Date startDate = choice.getStart_date();
+       Date startDate = choice.getstartDate();
        Calendar calendar = Calendar.getInstance();
        calendar.setTime(startDate);
        int startYear = calendar.get(Calendar.YEAR);
@@ -199,7 +203,7 @@ public class ExportResource {
        int startMinuteInt = calendar.get(Calendar.MINUTE);
        String startMinute = (startMinuteInt<10?"0":"")+startMinuteInt;
        // On recupère la date de fin
-       Date endDate = choice.getEnd_date();
+       Date endDate = choice.getendDate();
        calendar.setTime(endDate);
        int endHourInt = calendar.get(Calendar.HOUR_OF_DAY);
        String endHour = (endHourInt<10?"0":"")+endHourInt;
