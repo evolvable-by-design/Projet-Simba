@@ -38,7 +38,7 @@ public class Poll {
     @OneToMany(cascade = CascadeType.ALL)
     List<Comment> pollComments = new ArrayList<>();
 
-    private PadFeature pad = new PadFeature();
+    private String padURL;
 
     public Poll(){}
 
@@ -48,6 +48,7 @@ public class Poll {
         this.description = description;
         this.has_meal = has_meal;
         this.pollChoices = pollChoices;
+        this.padURL = new PadFeature().getPadUrl();
     }
 
     public void addChoice(Choice choice){
@@ -142,12 +143,12 @@ public class Poll {
         this.pollChoices = pollChoices;
     }
 
-    public PadFeature getPad() {
-        return pad;
+    public String getPadURL() {
+        return this.padURL;
     }
 
-    public void setPad(PadFeature pad) {
-        this.pad = pad;
+    public void setPadURL(String padURL) {
+        this.padURL=padURL;
     }
 
     @Override
