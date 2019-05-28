@@ -32,7 +32,6 @@ public class PadFeature {
     }
 
     public void init() {
-        String str = client.getText(padId).get("text").toString();
         final String substring = "This pad goes with the poll : "+this.titlePoll+'\n';
         client.setText(padId, substring);
     }
