@@ -37,16 +37,7 @@ public class CommentResource {
         if(!optUser.isPresent()){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<Comment> userComments = new ArrayList<>();
-        List<Comment> comments = commentRepository.findAll();
-        if(!comments.isEmpty()) {
-            for (Comment comment : comments) {
-                if (comment.getUser().getId() == idUser) {
-                    userComments.add(comment);
-                }
-            }
-        }
-        return new ResponseEntity<>(userComments, HttpStatus.OK);
+        return new ResponseEntity<>(optUser.get().getUserComments(), HttpStatus.OK);
     }
 
     @GetMapping("polls/{slug}/comments")

@@ -142,10 +142,16 @@ public class ChoiceResource {
         if(!pollOptional.get().getSlugAdmin().equals(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        // On met le bon id sur le nouveau choix
-        choice.setId(idChoice);
+        // On met à jour l'ancien choix
+        Choice ancientChoice = choiceOptional.get();
+        if (choice.getStart_date()!=null){
+            ancientChoice.setStart_date(choice.getStart_date());
+        }
+        if (choice.getEnd_date()!=null){
+            ancientChoice.setEnd_date(choice.getEnd_date());
+        }
         // On update la bdd
-        Choice updatedChoice = choiceRepository.save(choice);
+        Choice updatedChoice = choiceRepository.save(ancientChoice);
         return new ResponseEntity<>(updatedChoice, HttpStatus.OK);
     }
 

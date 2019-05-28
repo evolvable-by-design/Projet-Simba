@@ -83,6 +83,8 @@ public class UserResource {
             choice.removeUser(user.get());
             choiceRepository.save(choice);
         }
+        // On supprime les commentaires de l'utilisateurs
+        // Fait automatiquement par le cascade type ALL
 
         // On supprime l'utilisateur de la bdd
         userRepository.deleteById(idUser);
@@ -104,9 +106,12 @@ public class UserResource {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         // On met le bon id sur l'utilisateur
-        user.setId(idUser);
+        User ancientUser = optionalUser.get();
+        if (user.getUsername()!=null){
+            ancientUser.setUsername(user.getUsername());
+        }
         // On update l'utilisateur dans la bdd
-        User updatedUser = userRepository.save(user);
+        User updatedUser = userRepository.save(ancientUser);
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 }

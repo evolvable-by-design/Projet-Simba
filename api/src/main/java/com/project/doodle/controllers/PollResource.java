@@ -90,25 +90,19 @@ public class PollResource {
         }
         // On met au poll le bon id et les bons slugs
         Poll ancientPoll = optionalPoll.get();
-        poll.setId(ancientPoll.getId());
-        poll.setSlug(ancientPoll.getSlug());
-        poll.setSlugAdmin(ancientPoll.getSlugAdmin());
-        poll.setCreatedAt(ancientPoll.getCreatedAt());
-        poll.setPollChoices(ancientPoll.getPollChoices());
-        poll.setPollComments(ancientPoll.getPollComments());
-        // On met à jour le reste des fields
-        if (poll.getTitle()==null){
-            poll.setTitle(ancientPoll.getTitle());
+        // On met à jour l'ancien poll
+        if (poll.getTitle()!=null){
+            ancientPoll.setTitle(poll.getTitle());
         }
-        if (poll.getLocation()==null){
-            poll.setLocation(ancientPoll.getLocation());
+        if (poll.getLocation()!=null){
+            ancientPoll.setLocation(poll.getLocation());
         }
-        if (poll.getDescription()==null){
-            poll.setDescription(ancientPoll.getDescription());
+        if (poll.getDescription()!=null){
+            ancientPoll.setDescription(poll.getDescription());
         }
-
+        ancientPoll.setHas_meal(poll.isHas_meal());
         // On enregistre le poll dans la bdd
-        Poll updatedPoll = pollRepository.save(poll);
+        Poll updatedPoll = pollRepository.save(ancientPoll);
         return new ResponseEntity<>(updatedPoll, HttpStatus.OK);
     }
 }

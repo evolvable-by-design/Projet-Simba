@@ -13,7 +13,7 @@ public class Choice {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String name;
+    //private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date start_date;
@@ -31,8 +31,7 @@ public class Choice {
 
     public Choice(){}
 
-    public Choice(String name, Date start_date, Date end_date, List<User> users) {
-        this.name = name;
+    public Choice(Date start_date, Date end_date, List<User> users) {
         this.start_date = start_date;
         this.end_date = end_date;
         this.users = users;
@@ -52,14 +51,6 @@ public class Choice {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Date getStart_date() {
@@ -90,7 +81,6 @@ public class Choice {
     public String toString() {
         return "Choice{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", start_date=" + start_date +
                 ", end_date=" + end_date +
                 '}';

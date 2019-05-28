@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -15,25 +16,19 @@ public class User {
     private Long id;
 
     private String username;
-    private String first_name;
-    private String last_name;
-    private String email;
-
-    @CreationTimestamp
-    private Date createdAt;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "users")
-    List<Choice> userChoices;
+    List<Choice> userChoices = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL)
+    List<Comment> userComments = new ArrayList<>();
 
     public User(){}
 
-    public User(String username, String first_name, String last_name, String email, List<Choice> userChoices) {
+    public User(String username) {
         this.username = username;
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.email = email;
-        this.userChoices = userChoices;
     }
 
     public void addChoice(Choice choice){
@@ -43,6 +38,10 @@ public class User {
     public void removeChoice(Choice choice){
         this.userChoices.remove(choice);
     }
+
+    public void addComment (Comment comment) {this.userComments.add(comment);}
+
+    public void removeComment (Comment comment) {this.userComments.remove(comment);}
 
     public Long getId() {
         return id;
@@ -60,38 +59,6 @@ public class User {
         this.username = username;
     }
 
-    public String getFirst_name() {
-        return first_name;
-    }
-
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
-    }
-
-    public String getLast_name() {
-        return last_name;
-    }
-
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public List<Choice> getUserChoices() {
         return userChoices;
     }
@@ -100,15 +67,19 @@ public class User {
         this.userChoices = userChoices;
     }
 
+    public List<Comment> getUserComments() {
+        return userComments;
+    }
+
+    public void setUserComments(List<Comment> userComments) {
+        this.userComments = userComments;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", first_name='" + first_name + '\'' +
-                ", last_name='" + last_name + '\'' +
-                ", email='" + email + '\'' +
-                ", created_at=" + createdAt +
                 '}';
     }
 }

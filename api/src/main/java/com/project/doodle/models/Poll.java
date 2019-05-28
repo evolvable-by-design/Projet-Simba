@@ -1,6 +1,7 @@
 package com.project.doodle.models;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ public class Poll {
 
     @CreationTimestamp
     private Date createdAt;
+
+    @UpdateTimestamp
+    private Date updatedAt;
 
     @OneToMany(cascade = CascadeType.ALL)
     List<Choice> pollChoices;
@@ -103,7 +107,6 @@ public class Poll {
         this.has_meal = has_meal;
     }
 
-
     public String getSlug() {
         return slug;
     }
@@ -119,7 +122,6 @@ public class Poll {
     public void setSlugAdmin(String slugAdmin) {
         this.slugAdmin = slugAdmin;
     }
-
 
     public Date getCreatedAt() {
         return createdAt;
@@ -147,5 +149,13 @@ public class Poll {
                 ", has_meal=" + has_meal +
                 ", createdAt=" + createdAt +
                 '}';
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
