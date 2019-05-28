@@ -1,5 +1,6 @@
 package com.project.doodle.models;
 
+import com.project.doodle.features.PadFeature;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -36,6 +37,8 @@ public class Poll {
 
     @OneToMany(cascade = CascadeType.ALL)
     List<Comment> pollComments = new ArrayList<>();
+
+    private PadFeature pad = new PadFeature();
 
     public Poll(){}
 
@@ -137,6 +140,14 @@ public class Poll {
 
     public void setPollChoices(List<Choice> pollChoices) {
         this.pollChoices = pollChoices;
+    }
+
+    public PadFeature getPad() {
+        return pad;
+    }
+
+    public void setPad(PadFeature pad) {
+        this.pad = pad;
     }
 
     @Override

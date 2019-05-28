@@ -49,6 +49,16 @@ public class PollResource {
         return new ResponseEntity<>(poll.get(), HttpStatus.OK);
     }
 
+    @GetMapping("/polls/{slug}/pad")
+    public ResponseEntity<String> retrievePadURL(@PathVariable String slug){
+        // On vérifie que le poll existe
+        Optional<Poll> poll = pollRepository.findBySlug(slug);
+        if (!poll.isPresent()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(poll.get().getPad().getPadUrl(), HttpStatus.OK);
+    }
+
     @DeleteMapping("/polls/{slug}")
     public ResponseEntity<Poll> deletePoll(@PathVariable String slug, @RequestParam String token) {
         // On vérifie que le poll existe
@@ -65,6 +75,9 @@ public class PollResource {
 
         // On supprime tous les commentaires du poll
         // Fait automatiquement par le cascade type ALL
+
+        // On supprime le pad
+        poll.get().getPad().deletePad();
 
         // On supprime le poll de la bdd
         pollRepository.deleteById(poll.get().getId());
