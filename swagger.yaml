@@ -15,6 +15,8 @@ tags:
 
   - name: Votes
 
+  - name: Comments
+
 
 
 paths:   
@@ -116,7 +118,7 @@ paths:
         '404':
           description: Not Found
 
-  /api/polls/{pollId}/users:
+  /api/polls/{slug}/users:
     get:
       tags:
         - Users
@@ -124,10 +126,9 @@ paths:
       operationId: getAllUserFromPoll
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
       responses:
         '200':
@@ -166,7 +167,7 @@ paths:
 
 
   
-  /api/polls/{pollId}:
+  /api/polls/{slug}:
     get: 
       tags:
         - Polls
@@ -174,10 +175,9 @@ paths:
       operationId: retrievePoll
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema: 
-            type: number
-            format: int64
+            type: String
           required: true
       responses:
         '200':
@@ -193,10 +193,9 @@ paths:
       operationId: updatePoll
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
         - in: query
           name: poll
@@ -204,9 +203,16 @@ paths:
             $ref: '#/components/schemas/Poll'
           required: true
           description: the new properties of the poll to update
+        - in: query
+          name: token
+          schema:   
+            type: String
+          required: true
       responses:
         '200':
           description: OK
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found          
 
@@ -218,10 +224,9 @@ paths:
       operationId: deletePoll
       parameters: 
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
       responses:
         '200':
@@ -230,10 +235,7 @@ paths:
           description: Not Found
 
 
-
-
-
-  /api/polls/{pollId}/choices:
+  /api/polls/{slug}/choices:
     get:
       tags:
         - Choices
@@ -241,10 +243,9 @@ paths:
       operationId: retrieveAllChoicesFromPoll
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
       responses:
         '200':
@@ -259,10 +260,9 @@ paths:
       operationId: createChoices
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
         - in: query
           name: choices
@@ -325,7 +325,7 @@ paths:
   
       
 
-  /api/polls/{pollId}/choices/{choiceId}:
+  /api/polls/{slug}/choices/{choiceId}:
     get:
       tags:
         - Choices
@@ -333,10 +333,9 @@ paths:
       summary: Get a specific choice associated to a specific poll
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
         - in: path
           name: choiceId
@@ -357,10 +356,9 @@ paths:
       summary: Update a choice associated to a specific poll
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
         - in: path
           name: choiceId
@@ -387,10 +385,9 @@ paths:
       summary: Delete a specific choice associated to a specific poll
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
         - in: path
           name: choiceId
@@ -407,17 +404,16 @@ paths:
 
 
 
-  /api/polls/{pollId}/vote/{userId}:
+  /api/polls/{slug}/vote/{userId}:
     get:
       tags:
         - Votes
       operationId: vote
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
         - in: path
           name: userId
@@ -439,17 +435,16 @@ paths:
         '404':
           description: Not Found
       
-  /api/polls/{pollId}/choices/{choiceId}/count:
+  /api/polls/{slug}/choices/{choiceId}/count:
     get:
       tags:
         - Votes
       operationId: numberOfVoteForChoice
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
         - in: path
           name: choiceId
@@ -464,17 +459,16 @@ paths:
           description: Not Found
 
 
-  /api/polls/{pollId}/choices/{choiceId}/removevote/{userId}:
+  /api/polls/{slug}/choices/{choiceId}/removevote/{userId}:
     post:
       tags: 
         - Votes
       operationId: removeVote
       parameters:
         - in: path
-          name: pollId
+          name: slug
           schema:
-            type: number
-            format: int64
+            type: String
           required: true
         - in: path
           name: choiceId
@@ -497,11 +491,99 @@ paths:
           description: Not Found
 
 
+  /api/users/{userId}/comments:
+    get:
+      tags:
+        - Comments
+      operationId: getAllCommentsFromUser
+      summary: Get all comments associated to a specific user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+  /api/polls/{slug}/comments:
+    get:
+      tags:
+        - Comments
+      operationId: getAllCommentsFromPoll
+      summary: Get all comments associated to a specific poll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: String
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
           
 
-
-
-
+  /api/polls/{slug}/comments/{commentId}:
+    get:
+      tags:
+        - Comments
+      operationId: getCommentFromPoll
+      summary: Get a specific comment associated to a scpecific poll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: String
+          required: true
+        - in: path
+          name: commentId
+          schema: 
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+  
+  /api/polls/{slug}/comments/{userId}:
+    post:
+      tags:
+        - Comments
+      operationId: createComment
+      summary: Creation of a new comment by a specific user
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: String
+          required: true
+        - in: path
+          name: userId
+          schema: 
+            type: number
+            format: int64
+          required: true
+        - in: query
+          name: comment
+          schema: 
+            type: object
+            $ref: '#/components/schemas/Comment'
+          required: true
+      responses:
+        '201':
+          description: Created
+        '404':
+          description: Not Found
 
 components:
   schemas:
@@ -510,19 +592,9 @@ components:
       properties:
         id: 
           type: number
-          format: uuid
+          format: long
         username:
           type: string
-        first_name:
-          type: string
-        last_name:
-          type: string
-        email:
-          type: string
-          format: email
-        created_at:
-          type: string
-          format: date-time
         userChoices:
           type: List<Choice>
         userPolls:
@@ -533,17 +605,13 @@ components:
       properties:
         id:
           type: number
-          format: uuid
-        name:
-          type: string
+          format: long
         start_date:
           type: string
           format: date-time
         end_date:
           type: string
           format: date-time
-        poll:
-          type: Poll
         users:
           type: List<Users>
     
@@ -552,9 +620,7 @@ components:
       properties:
         id:
           type: number
-          format: uuid
-        slug:
-          type: string
+          format: long
         title:
           type: string
         location:
@@ -563,13 +629,35 @@ components:
           type: string
         has_meal:
           type: boolean
-        created_at:
+        slug:
+          type: string
+        slugAdmin:
+          type: string
+        createdAt:
           type: string
           format: date-time
-        poll_choices:
+        updatedAt:
+          type: string
+          format: date-time
+        pollChoices:
           type: List<Choice>
-        pollUsers:
-          type: List<User>
+        pollComments:
+          type: List<Comment>
+        pad:  
+          type: PadFeature
+
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: number
+          format: long
+        content:
+          type: string
+        user:
+          type: User
+        
 
 
         
