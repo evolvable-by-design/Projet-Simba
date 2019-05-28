@@ -1,5 +1,6 @@
 package com.project.doodle.controllers;
 
+import com.project.doodle.features.PadFeature;
 import com.project.doodle.models.Choice;
 import com.project.doodle.models.Poll;
 import com.project.doodle.models.User;
@@ -84,6 +85,9 @@ public class PollResource {
     @PostMapping("/polls")
     public ResponseEntity<Poll> createPoll(@Valid @RequestBody Poll poll) {
         // On enregistre le poll dans la bdd
+        PadFeature pad = new PadFeature(poll.getTitle());
+        pad.init();
+        poll.setPadURL(pad.getPadUrl());
         Poll savedPoll = pollRepository.save(poll);
         return new ResponseEntity<>(savedPoll, HttpStatus.CREATED);
     }

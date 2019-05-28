@@ -9,11 +9,14 @@ public class PadFeature {
     private EPLiteClient client;
     private String padId = generateSlug(6);
     private String padUrl = "http://localhost:9001/";
-    private static final String apikey = "00d4bfe69d0cb2bb7c3a3491500d31a89d39335a4c18cc89670b3c6f849c901c";
+    private static final String apikey = "fb01e499abd828370eaede1c05f1b91bbd941667413f45f6f32a547b1043da76";
+    private String titlePoll;
 
-    public PadFeature() {
+    public PadFeature(String titlePoll) {
         this.client = new EPLiteClient(padUrl, apikey);
         this.client.createPad(padId);
+        System.out.println(padId);
+        this.titlePoll = titlePoll;
     }
 
     public void createAuthor(String auth){
@@ -28,19 +31,10 @@ public class PadFeature {
         this.client.deletePad(this.padId);
     }
 
-    public void addUser(String user) {
+    public void init() {
         String str = client.getText(padId).get("text").toString();
-        final String substring = "Give your ideas here :\n";
-        int index = str.indexOf(substring);
-        if (index == -1) {
-            str = substring;
-            index = 0;
-        }
-        index += substring.length();
-        String begin = str.substring(0, index);
-        String end = str.substring(index);
-        str = begin + user + "\n" + end;
-        client.setText(padId, str);
+        final String substring = "This pad goes with the poll : "+this.titlePoll+'\n';
+        client.setText(padId, substring);
     }
 
     @Override

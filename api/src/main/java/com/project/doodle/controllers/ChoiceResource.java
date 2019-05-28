@@ -7,6 +7,7 @@ import com.project.doodle.repositories.ChoiceRepository;
 import com.project.doodle.repositories.PollRepository;
 import com.project.doodle.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +36,8 @@ public class ChoiceResource {
         if (!poll.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(poll.get().getPollChoices(), HttpStatus.OK);
+        List<Choice> choices = choiceRepository.findAll(Sort.by(Sort.Direction.ASC,"startDate"));
+        return new ResponseEntity<>(choices, HttpStatus.OK);
     }
 
     @GetMapping("/users/{idUser}/choices")
@@ -78,33 +80,38 @@ public class ChoiceResource {
         return new ResponseEntity<>(choice.get(), HttpStatus.OK);
     }
 
-    @DeleteMapping("/polls/{slug}/choices/{idChoice}")
-    public ResponseEntity<Choice> deleteChoiceFromPoll(@PathVariable String slug, @PathVariable long idChoice, @RequestParam String token) {
-        // On vérifie que le poll et le choix existent
+    @DeleteMapping("/polls/{slug}/choices")
+    public ResponseEntity<?> deleteChoiceFromPoll(@RequestBody HashMap<String, List<Long>> choices, @PathVariable String slug, @RequestParam String token) {
+        // On vérifie que le poll existe
+        List<Long> idchoices = choices.get("choices");
         Optional<Poll> poll = pollRepository.findBySlug(slug);
-        Optional<Choice> choice = choiceRepository.findById(idChoice);
-        if (!poll.isPresent() || !choice.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        // On vérifie que le choix appartienne bien au poll
-        if(!poll.get().getPollChoices().contains(choice.get())){
+        if (!poll.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         // On vérifie que le token soit bon
         if(!poll.get().getSlugAdmin().equals(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        // On enlève le choix du poll
-        poll.get().removeChoice(choice.get());
-        pollRepository.save(poll.get());
-        // On enlève le choix de la liste de chaque utilisateur
-        for (User user:choice.get().getUsers()) {
-            user.removeChoice(choice.get());
-            userRepository.save(user);
+        // On enlève les choix du poll
+        for (Long id: idchoices) {
+            // On vérifie que le choice existe
+            Optional<Choice> choice = choiceRepository.findById(id);
+            if (choice.isPresent()) {
+                // On remove le choice du poll
+                poll.get().removeChoice(choice.get());
+                pollRepository.save(poll.get());
+                // On remove le choices des utilisateurs
+                for (User user:userRepository.findAll()) {
+                    if(user.getUserChoices().contains(choice.get())){
+                        user.getUserChoices().remove(choice.get());
+                        userRepository.save(user);
+                    }
+                }
+                // On supprime le choice
+                choiceRepository.deleteById(id);
+            }
         }
-        // On supprime le choix de la bdd
-        choiceRepository.deleteById(idChoice);
-        return new ResponseEntity<>(choice.get(), HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/polls/{slug}/choices")
@@ -144,11 +151,11 @@ public class ChoiceResource {
         }
         // On met à jour l'ancien choix
         Choice ancientChoice = choiceOptional.get();
-        if (choice.getStart_date()!=null){
-            ancientChoice.setStart_date(choice.getStart_date());
+        if (choice.getstartDate()!=null){
+            ancientChoice.setstartDate(choice.getstartDate());
         }
-        if (choice.getEnd_date()!=null){
-            ancientChoice.setEnd_date(choice.getEnd_date());
+        if (choice.getendDate()!=null){
+            ancientChoice.setendDate(choice.getendDate());
         }
         // On update la bdd
         Choice updatedChoice = choiceRepository.save(ancientChoice);

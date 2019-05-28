@@ -16,10 +16,10 @@ public class Choice {
     //private String name;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date start_date;
+    private Date startDate;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date end_date;
+    private Date endDate;
 
     @ManyToMany
     @JoinTable(
@@ -31,9 +31,9 @@ public class Choice {
 
     public Choice(){}
 
-    public Choice(Date start_date, Date end_date, List<User> users) {
-        this.start_date = start_date;
-        this.end_date = end_date;
+    public Choice(Date startDate, Date endDate, List<User> users) {
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.users = users;
     }
 
@@ -53,20 +53,20 @@ public class Choice {
         this.id = id;
     }
 
-    public Date getStart_date() {
-        return start_date;
+    public Date getstartDate() {
+        return startDate;
     }
 
-    public void setStart_date(Date start_date) {
-        this.start_date = start_date;
+    public void setstartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    public Date getEnd_date() {
-        return end_date;
+    public Date getendDate() {
+        return endDate;
     }
 
-    public void setEnd_date(Date end_date) {
-        this.end_date = end_date;
+    public void setendDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     public List<User> getUsers() {
@@ -81,8 +81,8 @@ public class Choice {
     public String toString() {
         return "Choice{" +
                 "id=" + id +
-                ", start_date=" + start_date +
-                ", end_date=" + end_date +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
                 '}';
     }
 }

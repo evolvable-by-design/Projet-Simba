@@ -48,7 +48,6 @@ public class Poll {
         this.description = description;
         this.has_meal = has_meal;
         this.pollChoices = pollChoices;
-        this.padURL = new PadFeature().getPadUrl();
     }
 
     public void addChoice(Choice choice){
