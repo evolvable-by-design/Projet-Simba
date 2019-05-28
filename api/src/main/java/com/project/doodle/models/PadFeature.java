@@ -10,7 +10,7 @@ public class PadFeature {
         String padId;
         String padUrl;
 
-        private static final String apikey = "00d4bfe69d0cb2bb7c3a3491500d31a89d39335a4c18cc89670b3c6f849c901c";
+        private static final String apikey = "fa8cce291d03acaf1dce7d137f73ce60aa2eeebdec77be42bcb8461d0e4278ea";
 
         public PadFeature(String padUrl, String apikey, String padId) {
             client = new EPLiteClient(padUrl, apikey);
@@ -25,12 +25,15 @@ public class PadFeature {
         }
 
 
+
+
         public static void main(String[] args) {
-            PadFeature pad = new PadFeature("http://localhost:9001/", "key", "ertghj");
+            PadFeature pad = new PadFeature("http://localhost:9001/", apikey, "erty");
             pad.addUser("Anne");
             pad.addUser("moi");
             pad.addUser("toi");
             System.out.println( pad.getPadUrl());
+            pad.createAuthor("moityu");
 
         }
 
