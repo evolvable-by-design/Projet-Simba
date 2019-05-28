@@ -26,7 +26,7 @@ public class PadFeature {
 
 
         public static void main(String[] args) {
-            PadFeature pad = new PadFeature("http://localhost:9001/", apikey, "id");
+            PadFeature pad = new PadFeature("http://localhost:9001/", apikey, "idrrf");
             pad.addUser("Anne");
             pad.addUser("moi");
             pad.addUser("toi");
@@ -51,6 +51,10 @@ public class PadFeature {
             String end = str.substring(index);
             str = begin + user + "\n" + end;
             client.setText(padId, str);
+        }
+
+        public void deletePad(String padId){
+            this.client.deletePad(padId);
         }
 
 
