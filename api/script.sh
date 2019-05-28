@@ -13,7 +13,7 @@ echo 'pulling the etherpad docker image'
 docker pull etherpad/etherpad
 
 touch APIKEY.txt
-chmod 777 APIKEY.txt
+sudo chmod 777 APIKEY.txt
 echo 'fa8cce291d03acaf1dce7d137f73ce60aa2eeebdec77be42bcb8461d0e4278ea' > APIKEY.txt
 
 docker run -v $(pwd)/APIKEY.txt:/opt/etherpad-lite/APIKEY.txt --publish 9001:9001 --name etherpad  etherpad/etherpad
