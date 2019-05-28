@@ -36,12 +36,7 @@ services:
       - mydb
     ports : 
       - 8080:8080
-  etherpad:
-    image: etherpad/etherpad
-    environment:
-      - ETHERPAD_API_KEY: "/APIKEY.txt"
-    ports:
-      - 9001:9001
+
 volumes:
   my-db:
       driver: local
