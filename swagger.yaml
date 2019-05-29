@@ -10,6 +10,8 @@ tags:
   - name: Users
 
   - name: Polls
+
+  - name: Pad
   
   - name: Choices
 
@@ -46,7 +48,7 @@ paths:
           description: properties of the new user to create
       responses:
         '201':
-          description: OK
+          description:  Created
         '400':
           description: Bad Request
           
@@ -179,9 +181,16 @@ paths:
           schema: 
             type: String
           required: true
+        - in: query
+          name: token
+          schema: 
+            type: String
+          required: false
       responses:
         '200':
           description: OK
+        '401':
+          description: Unauthorized
         '404':
           description: Not Found
     
@@ -228,12 +237,34 @@ paths:
           schema:
             type: String
           required: true
+        - in: query 
+          name: token
+          schema: 
+            type: String
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+
+  /api/polls/{slug}/pad:
+    get:
+      tags: 
+        - Pad
+      name: retrievePadURL
+      parameters:
+        - in: path
+          name: slug
+          schema: 
+            type: String
+          required: true 
       responses:
         '200':
           description: OK
         '404':
           description: Not Found
-
 
   /api/polls/{slug}/choices:
     get:
@@ -265,6 +296,11 @@ paths:
             type: String
           required: true
         - in: query
+          name: token
+          schema:
+            type: String
+          required: true
+        - in: query
           name: choices
           schema:
             type: List<Choice>
@@ -275,6 +311,38 @@ paths:
           description: Created
         '400':
           description: Bad Request
+        '401':
+          description: Unauthorized
+
+
+    delete:
+      tags:
+        - Choices
+      operationId: deleteChoiceFromPoll
+      summary: Delete a specific choice associated to a specific poll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: String
+          required: true
+        - in: query 
+          name: token
+          schema:   
+            type: string
+          required: true
+        - in: query
+          name: choices
+          schema: 
+            type: HashMap<String, List<Long>>
+          required: true
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
 
   
   /api/users/{userId}/choices:
@@ -372,40 +440,28 @@ paths:
             $ref: '#/components/schemas/Choice'
           required: true
           description: the new properties of the choice to update
+        - in: query
+          name: token
+          schema: 
+            type: String
+          required: true
       responses:
         '200':
           description: OK
+        '401':
+          description: 'Unauthorized'
         '404':
           description: Not Found
 
-    delete:
-      tags:
-        - Choices
-      operationId: deleteChoiceFromPoll
-      summary: Delete a specific choice associated to a specific poll
-      parameters:
-        - in: path
-          name: slug
-          schema:
-            type: String
-          required: true
-        - in: path
-          name: choiceId
-          schema:
-            type: number
-            format: int64
-          required: true
-      responses:
-        '200':
-          description: OK
-        '404':
-          description: Not Found
+
+
+    
     
 
 
 
   /api/polls/{slug}/vote/{userId}:
-    get:
+    post:
       tags:
         - Votes
       operationId: vote
@@ -425,7 +481,6 @@ paths:
           name: choices
           schema:
             type: HashMap<String, List<Long>>
-            format: HashMap<String, List<Long>>
           required: true 
       responses:
         '200':
