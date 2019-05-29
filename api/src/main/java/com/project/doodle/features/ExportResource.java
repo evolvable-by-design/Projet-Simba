@@ -174,8 +174,8 @@ public class ExportResource {
         Number number;
         WritableSheet mainSheet = Wbook.getSheet(0);
 
-        //List<Choice> choices = poll.getPollChoices();
-        List<Choice> choices = choiceRepository.findAll(Sort.by(Sort.Direction.ASC,"startDate"));
+        List<Choice> choices = poll.getPollChoices();
+        //List<Choice> choices = choiceRepository.findAll(Sort.by(Sort.Direction.ASC,"startDate"));
 
 
         // Format objects
