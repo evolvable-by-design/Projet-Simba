@@ -1,13 +1,17 @@
 package com.project.doodle.features;
 
+import com.project.doodle.Utils;
 import com.project.doodle.models.Choice;
 import com.project.doodle.models.Poll;
 import com.project.doodle.models.User;
 import com.project.doodle.repositories.ChoiceRepository;
 import com.project.doodle.repositories.PollRepository;
 import com.project.doodle.repositories.UserRepository;
+import jxl.format.Colour;
+import jxl.write.Label;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +29,7 @@ import jxl.Workbook;
 import jxl.write.*;
 import jxl.write.Number;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -33,6 +38,8 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.*;
+import java.util.List;
+
 
 
 @RestController
@@ -67,16 +74,22 @@ public class ExportResource {
         if (!poll.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        String filePath = "./Test.pdf";
+        String filePath = "./Test.xls";
+        Utils.excel2pdf();
+        //convertToPdf(filePath);
         return getHttpEntityToDownload(filePath,"pdf");
     }
 
     private String convertToPdf(String filePath){
         return "";
+
     }
 
     static int beginningColumnCell = 0;
     static int beginningRowCell = 3;
+    static int fontSize=9;
+    static Colour borderColour = Colour.WHITE;
+
     private String createExcelFile(Poll poll,String slug) throws IOException{
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy-HH.mm.ss");
         Date date = new Date();
@@ -90,14 +103,16 @@ public class ExportResource {
 
            // Create an Excel sheet
            WritableSheet mainSheet = Wbook.createSheet("SONDAGE", 0);
+           Wbook.setColourRGB(Colour.BLUE, 53, 37, 230);
 
            // Format objects
-           WritableCellFormat cFormat = new WritableCellFormat();
-           WritableFont font = new WritableFont(WritableFont.ARIAL, 16, WritableFont.BOLD);
-           cFormat.setFont(font);
+           WritableCellFormat formatTitle = new WritableCellFormat();
+           WritableFont fontTitle = new WritableFont(WritableFont.TAHOMA, 16, WritableFont.BOLD);
+           fontTitle.setColour(Colour.BLUE);
+           formatTitle.setFont(fontTitle);
 
            Label label;
-           label = new Label(0, 0, "Sondage \""+poll.getTitle()+"\"", cFormat);
+           label = new Label(0, 0, "Sondage \""+poll.getTitle()+"\"", formatTitle);
            mainSheet.addCell(label);
            label = new Label(0, 1, "http://localhost:3000/polls/"+poll.getSlug());
            mainSheet.addCell(label);
@@ -159,10 +174,32 @@ public class ExportResource {
         Number number;
         WritableSheet mainSheet = Wbook.getSheet(0);
 
-        List<Choice> choices = poll.getPollChoices();
+        //List<Choice> choices = poll.getPollChoices();
+        List<Choice> choices = choiceRepository.findAll(Sort.by(Sort.Direction.ASC,"startDate"));
+
+
+        // Format objects
+        WritableCellFormat formatVoteYes = new WritableCellFormat();
+        formatVoteYes.setAlignment(Alignment.CENTRE);
+        formatVoteYes.setVerticalAlignment(VerticalAlignment.CENTRE);
+        formatVoteYes.setBorder(Border.ALL, BorderLineStyle.THIN , borderColour);
+        formatVoteYes.setBackground(Colour.LIGHT_GREEN);
+        WritableFont fontVoteYes = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
+        fontVoteYes.setColour(Colour.BLACK);
+        formatVoteYes.setFont(fontVoteYes);
+        // Format objects
+        WritableCellFormat formatVoteNo = new WritableCellFormat();
+        formatVoteNo.setAlignment(Alignment.CENTRE);
+        formatVoteNo.setVerticalAlignment(VerticalAlignment.CENTRE);
+        formatVoteNo.setBorder(Border.ALL, BorderLineStyle.THIN , borderColour);
+        formatVoteNo.setBackground(Colour.LIGHT_ORANGE);
+        WritableFont fontVoteNo = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
+        fontVoteNo.setColour(Colour.BLACK);
+        formatVoteNo.setFont(fontVoteNo);
 
         // On ecrit les colonnes des choix
         for (int i=0; i<choices.size();i++){
+            mainSheet.setColumnView(1+beginningColumnCell+i,14);
             // On ecrit la date
             writeChoiceDate(Wbook,choices,i);
 
@@ -170,9 +207,9 @@ public class ExportResource {
             List<User> listUsersVotes = choices.get(i).getUsers();
             for (int x=0;x<users.size();x++){
                 if(listUsersVotes.contains(users.get(x))){
-                    label = new Label(1+beginningColumnCell+i, 3+beginningRowCell+x, "OK");
+                    label = new Label(1+beginningColumnCell+i, 3+beginningRowCell+x, "OK",formatVoteYes);
                 }else{
-                    label = new Label(1+beginningColumnCell+i, 3+beginningRowCell+x, "-");
+                    label = new Label(1+beginningColumnCell+i, 3+beginningRowCell+x, "-",formatVoteNo);
                 }
                 mainSheet.addCell(label);
             }
@@ -187,7 +224,18 @@ public class ExportResource {
        Label label;
        WritableSheet mainSheet = Wbook.getSheet(0);
        String month[] = {"Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Aout","Septembre","Novembre","Décembre"};
-       String dayOfWeek[] = {"Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"};
+       String dayOfWeek[] = {"Lun.","Mar.","Mer.","Jeu.","Ven.","Sam.","Dim."};
+        Wbook.setColourRGB(Colour.BLUE, 53, 37, 230);
+        // Format objects
+        WritableCellFormat formatDate = new WritableCellFormat();
+        formatDate.setAlignment(Alignment.CENTRE);
+        formatDate.setVerticalAlignment(VerticalAlignment.CENTRE);
+        formatDate.setBorder(Border.ALL, BorderLineStyle.THIN , borderColour);
+        formatDate.setBackground(Colour.BLUE);
+        WritableFont fontDate = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
+        fontDate.setColour(Colour.WHITE);
+        formatDate.setFont(fontDate);
+
 
        // On recupère la date de début
        Choice choice=choices.get(i);
@@ -210,11 +258,11 @@ public class ExportResource {
        int endMinuteInt = calendar.get(Calendar.MINUTE);
        String endMinute = (endMinuteInt<10?"0":"")+endMinuteInt;
 
-       label = new Label(1+beginningColumnCell+i, beginningRowCell, startMonth+" "+startYear );
+       label = new Label(1+beginningColumnCell+i, beginningRowCell, startMonth+" "+startYear ,formatDate);
        mainSheet.addCell(label);
-       label = new Label(1+beginningColumnCell+i, 1+beginningRowCell, startDayOfWeek+" "+startDayOfMonth );
+       label = new Label(1+beginningColumnCell+i, 1+beginningRowCell, startDayOfWeek+" "+startDayOfMonth,formatDate );
        mainSheet.addCell(label);
-       label = new Label(1+beginningColumnCell+i, 2+beginningRowCell, startHour+":"+startMinute+" - "+endHour+":"+endMinute );
+       label = new Label(1+beginningColumnCell+i, 2+beginningRowCell, startHour+":"+startMinute+" - "+endHour+":"+endMinute ,formatDate);
        mainSheet.addCell(label);
    }
 
@@ -222,9 +270,22 @@ public class ExportResource {
         Label label;
 
         WritableSheet mainSheet = Wbook.getSheet(0);
+        mainSheet.setColumnView(beginningColumnCell,25);
+
+        // Format objects
+        WritableCellFormat formatUser = new WritableCellFormat();
+        formatUser.setAlignment(Alignment.RIGHT);
+        formatUser.setVerticalAlignment(VerticalAlignment.CENTRE);
+        formatUser.setBorder(Border.ALL, BorderLineStyle.THIN , borderColour);
+
+        formatUser.setBackground(Colour.GRAY_25);
+        WritableFont fontUser = new WritableFont(WritableFont.TAHOMA, fontSize, WritableFont.NO_BOLD);
+        fontUser.setColour(Colour.BLACK);
+        formatUser.setFont(fontUser);
+
         // On ecrit la premier colonne avec users et label "Nombre"
         for (int i=0; i<users.size();i++){
-            label = new Label(beginningColumnCell, 3+beginningRowCell+i, users.get(i).getUsername());
+            label = new Label(beginningColumnCell, 3+beginningRowCell+i, users.get(i).getUsername(),formatUser);
             mainSheet.addCell(label);
         }
         label = new Label(beginningColumnCell, 3+beginningRowCell+users.size(), "Nombre");
