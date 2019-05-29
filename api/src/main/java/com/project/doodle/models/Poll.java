@@ -23,7 +23,7 @@ public class Poll {
     private boolean has_meal;
     private String slug = generateSlug(24);
     private String slugAdmin = generateSlug(24);
-
+    private String tlkURL = "https://tlk.io/"+generateSlug(12);
 
     @CreationTimestamp
     private Date createdAt;
@@ -71,6 +71,14 @@ public class Poll {
 
     public Long getId() {
         return id;
+    }
+
+    public String getTlkURL() {
+        return tlkURL;
+    }
+
+    public void setTlkURL(String tlkURL) {
+        this.tlkURL = tlkURL;
     }
 
     public List<Comment> getPollComments() {
