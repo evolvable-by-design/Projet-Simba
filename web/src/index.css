@@ -10,11 +10,7 @@ body {
 body {
   background-color: #F0F4F8;
   color: #303030;
-  font-family: 'Roboto', sans-serif;
-}
-
-#root {
-  height: 100%;
+  font-family: 'Montserrat', 'Open Sans', 'Roboto', sans-serif;
 }
 
 .Btn-primary {

@@ -198,6 +198,7 @@ ul{
 .Poll_Location {
   display: flex;
   align-items: center;
+  justify-content: center;
   flex: 1;
 }
 
@@ -212,6 +213,7 @@ ul{
 .Poll_Has_Meal {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 
 .Poll_Description_Title {
@@ -238,6 +240,7 @@ ul{
 .Poll_Vote_Action {
   display: flex;
   justify-content: flex-end;
+  padding: 1rem;
 }
 
 
@@ -253,7 +256,7 @@ ul{
 .Poll_Subtitle {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   font-size: 1rem;
   margin-top: 1.5rem;
 }
@@ -322,9 +325,23 @@ ul{
 
 .Links {
   display: flex;
-  align-self: flex-end;
+  font-weight: 600;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.Links_Right {
+  display: flex;
   background: #4D3DF7;
-  border-radius: 10px 10px 0 0;
+  border-radius: 5px 5px 0 0;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
+}
+
+.Links_Left {
+  display: flex;
+  background: #4D3DF7;
+  border-radius: 5px 5px 0 0;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
 }
 
@@ -339,14 +356,118 @@ ul{
 }
 
 .Feat_Link:first-child {
-  border-radius: 10px 0 0 0;
+  border-radius: 5px 0 0 0;
 }
 
 .Feat_Link:last-child {
-  border-radius: 0 10px 0 0;
+  border-radius: 0 5px 0 0;
 }
 
 
+.Feat_Link.Unique {
+  border-radius: 5px 5px 0 0!important;
+}
+
 .Feat_Link:hover {
   background-color: #0C008C;
+}
+
+.MealPref {
+  padding: 1rem 0;
+  font-size: 1.1rem;
+}
+
+.Author_MealPref {
+  font-weight: bold;
+  color: #4d3cf7;
+}
+
+.Author_Comment {
+  font-weight: bold;
+  color: #4d3cf7;
+}
+
+
+.orange {
+  background-color:  #F7D070;
+}
+
+.orange:hover {
+  background-color:  #E9B949;
+}
+
+.modal {
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.Export_Modal {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  width: 500px; /* Could be more or less, depending on screen size */
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
+}
+
+.Export {
+  padding: 20px;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #4d3cf7;
+  font-size: 1.2rem;
+  font-weight: bold;
+  transition: background-color 0.3s linear;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.Export:hover {
+  background-color: #4d3cf7;
+  color: white;
+}
+
+.Export:first-child {
+  border-right: 4px solid #4d3cf7;
+  border-radius: 3px 0 0 3px;
+}
+
+.Export:last-child {
+  border-radius: 0 3px 3px 0;
+}
+
+.Export_Icon {
+  margin: 1rem;
+}
+
+.Poll_Informations {
+  background-color: white;
+  width: 100%;
+  margin-top: 1rem;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
+  border-radius: 5px;
+}
+
+.Meal_Preferences {
+  padding: 1rem;
+  border-bottom: 2px solid #F0F4F8;
+}
+
+.Comments {
+  padding: 1rem;
 }

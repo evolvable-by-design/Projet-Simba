@@ -1,6 +1,6 @@
 .Container {
   max-width: 800px;
-  margin: 0 auto;
+  margin: 2rem auto;
   justify-content: center;
   align-items: center;
   display: flex;
