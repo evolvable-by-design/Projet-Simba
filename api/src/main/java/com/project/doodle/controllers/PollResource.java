@@ -23,7 +23,8 @@ public class PollResource {
     @Autowired
     private PollRepository pollRepository;
 
-    private final String padUrl = "http://localhost:9001/";
+    private final String padUrl = "http://etherpad:9001/";
+    private final String padUrlLocalhost = "http://localhost:9001/";
     private final String apikey = "fa8cce291d03acaf1dce7d137f73ce60aa2eeebdec77be42bcb8461d0e4278ea";
     private EPLiteClient client = new EPLiteClient(padUrl, apikey);
 
@@ -88,7 +89,8 @@ public class PollResource {
         String padId = generateSlug(6);
         client.createPad(padId);
         initPad(poll.getTitle(), poll.getLocation(), poll.getDescription(), client, padId);
-        poll.setPadURL(padUrl+"p/"+padId);
+        //poll.setPadURL(padUrl+"p/"+padId);
+        poll.setPadURL(padUrlLocalhost+"p/"+padId);
         Poll savedPoll = pollRepository.save(poll);
         return new ResponseEntity<>(savedPoll, HttpStatus.CREATED);
     }

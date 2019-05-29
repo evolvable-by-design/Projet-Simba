@@ -17,7 +17,14 @@ services:
       - 3306:3306
     expose:
       - 3306
-
+  etherpad:
+    image: etherpad/etherpad
+    container_name: etherpad
+    restart: always
+    volumes:
+      - ./APIKEY.txt:/opt/etherpad-lite/APIKEY.txt
+    ports:
+      - 9001:9001
   server:
     build: .
     image: simba
@@ -25,6 +32,7 @@ services:
     restart: always
     links:
       - mydb:mydb
+      - etherpad:etherpad
     environment:
 
       - DATABASE_HOST=mydb
@@ -34,8 +42,12 @@ services:
       - DATABASE_PORT=3306
     depends_on:
       - mydb
+      - etherpad
     ports : 
-      - 8080:8080
+      - 8080:7777
+
+
+
 volumes:
   my-db:
       driver: local
