@@ -35,6 +35,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.lang.Boolean;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.util.*;
@@ -55,7 +56,7 @@ public class ExportResource {
 
     private static final String APPLICATION_EXCEL = "application/vnd.ms-excel";
     private static final String APPLICATION_PDF = "application/pdf";
-    private static final String EXCEL_FILE_LOCATION = "./generatedFiles";
+    private static final String EXCEL_FILE_LOCATION = "/home/excelFiles";
 
 
     @RequestMapping(value = "/polls/{slug}/results", method = RequestMethod.GET, produces = APPLICATION_EXCEL)
@@ -93,13 +94,24 @@ public class ExportResource {
     private String createExcelFile(Poll poll,String slug) throws IOException{
         DateFormat dateFormat = new SimpleDateFormat("dd.MM.yy-HH.mm.ss");
         Date date = new Date();
-        String fileName = EXCEL_FILE_LOCATION+"/"+slug+"-"+dateFormat.format(date)+".xls";
+        String fileName = EXCEL_FILE_LOCATION+File.separator+slug+"-"+dateFormat.format(date)+".xls";
+
+        File folder = new File(EXCEL_FILE_LOCATION);
+        if(!folder.exists()) {
+            folder.mkdir();
+        }
 
        // Create an Excel file
        WritableWorkbook Wbook = null;
        try {
+           System.out.println("Création du fichier");
            // Create an Excel file in the file location
-           Wbook = Workbook.createWorkbook(new File(fileName));
+            File file = new File(fileName);
+
+            if(!file.createNewFile()) {
+                System.out.println("Erreur lors de la création du fichier");
+            }
+            Wbook = Workbook.createWorkbook(file);
 
            // Create an Excel sheet
            WritableSheet mainSheet = Wbook.createSheet("SONDAGE", 0);
@@ -126,29 +138,26 @@ public class ExportResource {
            // On ecrit les choix avec les votes de chaque users
            writeChoices(poll,Wbook,users);
 
+           System.out.println("Enregistrement du fichier");
            // On ecrit les donnée du workbook dans un format excel
            Wbook.write();
 
-       } catch (WriteException e) {
-           e.printStackTrace();
-       } catch (IOException e) {
+       } catch (Exception e) {
+           System.out.println("Erreur lors de la création du fichier :( " + e.toString());
            e.printStackTrace();
        } finally {
 
            if (Wbook != null) {
                try {
                    Wbook.close();
-               } catch (IOException e) {
-                   e.printStackTrace();
-               } catch (WriteException e) {
+               } catch (Exception e) {
                    e.printStackTrace();
                }
            }
 
 
        }
-
-        return fileName;
+       return fileName;
     }
 
     private  List<User> retrieveUsers (Poll poll) {

@@ -21,6 +21,8 @@ services:
     image: etherpad/etherpad
     container_name: etherpad
     restart: always
+    environment:
+      - NODE_ENV=production
     volumes:
       - ./APIKEY.txt:/opt/etherpad-lite/APIKEY.txt
     ports:
