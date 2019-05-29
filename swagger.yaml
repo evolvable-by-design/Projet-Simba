@@ -19,6 +19,10 @@ tags:
 
   - name: Comments
 
+  - name: Export
+
+  - name: MealPreferences
+
 
 
 paths:   
@@ -43,14 +47,12 @@ paths:
         - in: query
           name: user
           schema: 
-            $ref: '#/components/schemas/User'
+            type: User
           required: true
           description: properties of the new user to create
       responses:
         '201':
           description:  Created
-        '400':
-          description: Bad Request
           
   
   /api/users/{userId}:
@@ -91,7 +93,7 @@ paths:
         - in: query
           name: user
           schema:
-            $ref: '#/components/schemas/User'
+            type: User
           required: true
           description: the new user properties
       responses:
@@ -158,15 +160,12 @@ paths:
         - in: query
           name: poll
           schema: 
-            $ref: '#/components/schemas/Poll'
+            type: Poll
           required: true
           description: the properties of the poll to create
       responses:
         '201': 
           description: Created
-        '400':
-          description: Bad Request
-
 
   
   /api/polls/{slug}:
@@ -209,7 +208,7 @@ paths:
         - in: query
           name: poll
           schema:
-            $ref: '#/components/schemas/Poll'
+            type: Poll
           required: true
           description: the new properties of the poll to update
         - in: query
@@ -253,7 +252,7 @@ paths:
     get:
       tags: 
         - Pad
-      name: retrievePadURL
+      operationId: retrievePadURL
       parameters:
         - in: path
           name: slug
@@ -304,7 +303,6 @@ paths:
           name: choices
           schema:
             type: List<Choice>
-            $ref: '#/components/schemas/Choice'
           required: true
       responses:
         '201':
@@ -335,6 +333,7 @@ paths:
           name: choices
           schema: 
             type: HashMap<String, List<Long>>
+          description: String = "choices" et Long = idChoice
           required: true
       responses:
         '200':
@@ -437,7 +436,7 @@ paths:
         - in: query
           name: choice
           schema:
-            $ref: '#/components/schemas/Choice'
+            type: Choice
           required: true
           description: the new properties of the choice to update
         - in: query
@@ -453,43 +452,6 @@ paths:
         '404':
           description: Not Found
 
-
-
-    
-    
-
-
-
-  /api/polls/{slug}/vote/{userId}:
-    post:
-      tags:
-        - Votes
-      operationId: vote
-      parameters:
-        - in: path
-          name: slug
-          schema:
-            type: String
-          required: true
-        - in: path
-          name: userId
-          schema: 
-            type: number
-            format: int64
-          required: true
-        - in: query
-          name: choices
-          schema:
-            type: HashMap<String, List<Long>>
-          required: true 
-      responses:
-        '200':
-          description: OK
-        '400':
-          description: Bad Request
-        '404':
-          description: Not Found
-      
   /api/polls/{slug}/choices/{choiceId}/count:
     get:
       tags:
@@ -512,6 +474,39 @@ paths:
           description: OK
         '404':
           description: Not Found
+
+  /api/polls/{slug}/vote/{userId}:
+    post:
+      tags:
+        - Votes
+      operationId: vote
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: String
+          required: true
+        - in: path
+          name: userId
+          schema: 
+            type: number
+            format: int64
+          required: true
+        - in: query
+          name: choices
+          schema:
+            type: HashMap<String, List<Long>>
+          description: String = "choices" et Long = idChoice
+          required: true 
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+      
+
 
 
   /api/polls/{slug}/choices/{choiceId}/removevote/{userId}:
@@ -631,14 +626,108 @@ paths:
         - in: query
           name: comment
           schema: 
-            type: object
-            $ref: '#/components/schemas/Comment'
+            type: Comment
           required: true
       responses:
         '201':
           description: Created
         '404':
           description: Not Found
+
+
+  /api/polls/{slug}/mealpreferences:
+    get:
+      tags:
+        - MealPreferences
+      operationId: getAllMealPreferencesFromPoll
+      summary: Get all meal preferences associated to a specific poll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: String
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+  /api/polls/{slug}/mealpreference/{mealPreferenceId}:
+    get:
+      tags:
+        - MealPreferences
+      operationId: getMealPreferenceFromPoll
+      summary: Get a specific meal preference from a specific poll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: String
+          required: true
+        - in: path
+          name: mealPreferenceId
+          schema:
+            type: number
+            format: int64
+          required: true
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+
+  /api/polls/{slug}/mealpreference/{userId}:
+    post:
+      tags:
+        - MealPreferences
+      operationId: createMealPreference
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: String
+          required: true
+        - in: path
+          name: userId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: query
+          name: mealPreference
+          schema: 
+            type: MealPreference
+          required: true
+      responses:
+        '201':
+          description: Created
+        '404':
+          description: Not Found
+
+
+  /api/polls/{slug}/results:
+    get:
+      tags:
+        - Export
+      operationId: downloadResultsExcel
+      summary: Exports in an excel file
+      parameters:
+        - in: path
+          name: slug
+          schema: 
+            type: String
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+
+
 
 components:
   schemas:
@@ -654,6 +743,8 @@ components:
           type: List<Choice>
         userPolls:
           type: List<Poll>
+        userMealPreferences:
+          type: List<MealPreference>
     
     Choice:
       type: object
@@ -688,6 +779,8 @@ components:
           type: string
         slugAdmin:
           type: string
+        tlkURL:
+          type: string
         createdAt:
           type: string
           format: date-time
@@ -698,11 +791,25 @@ components:
           type: List<Choice>
         pollComments:
           type: List<Comment>
-        pad:  
-          type: PadFeature
+        pollMealPreferences:
+          type: List<MealPreference>
+        padURL:  
+          type: String
 
 
     Comment:
+      type: object
+      properties:
+        id:
+          type: number
+          format: long
+        content:
+          type: string
+        user:
+          type: User
+
+
+    MealPreference:
       type: object
       properties:
         id:
