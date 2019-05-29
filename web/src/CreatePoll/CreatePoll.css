@@ -135,7 +135,6 @@ input:checked + .slider:before {
   margin-right: 2rem;
 }
 
-
 .Poll_Link {
   font-size: 1.2rem;
   margin-right: 1rem;
@@ -144,7 +143,7 @@ input:checked + .slider:before {
 .Recap_Link {
   display: flex;
   align-items: center;
-  padding: 5px 0;
+  padding: 10px 0;
 }
 
 .Copy_Link {
@@ -152,8 +151,16 @@ input:checked + .slider:before {
   font-size: 1rem;
   display: flex;
   align-items: center;
+  background: none;
 }
 
 .text-green {
   color: #199473;
+}
+
+.Recap_Links {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 }

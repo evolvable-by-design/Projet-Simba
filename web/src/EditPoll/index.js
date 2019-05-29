@@ -234,7 +234,7 @@ const EditPoll = (props) => {
     <>
       <div className="Container">
         <h1>
-          Édition de <Link to={`/polls/${slug}`} className="Link">{title}</Link>
+          Édition de <Link to={`/polls/${slug}?t=${token}`} className="Link">{title}</Link>
         </h1>
         <Wizard>
         <Steps>

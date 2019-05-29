@@ -469,5 +469,18 @@ ul{
 }
 
 .Comments {
+}
+
+.Disabled {
+  background-color: #cccccc;
+}
+
+.Disabled:hover {
+  color: #4d3cf7;
+  background-color: #cccccc;
+  cursor: default;
+}
+
+.Comment {
   padding: 1rem;
 }
