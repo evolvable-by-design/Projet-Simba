@@ -1,0 +1,49 @@
+version: '3'
+services:
+  mydb:
+    image: mysql:latest
+    container_name: mysql-docker-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'doodle'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: 'root'
+
+    volumes:
+      - my-db:/var/lib/mysql
+
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+
+  server:
+    build: .
+    image: simba
+    container_name: simbaProject
+    restart: always
+    links:
+      - mydb:mydb
+    environment:
+
+      - DATABASE_HOST=mydb
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - DATABASE_NAME=doodle
+      - DATABASE_PORT=3306
+    depends_on:
+      - mydb
+    ports : 
+      - 8080:8080
+volumes:
+  my-db:
+      driver: local
+   
+  
+    
+    
+    
+    
+    
+    
