@@ -197,6 +197,7 @@ public class ExportResource {
         fontVoteYes.setColour(Colour.BLACK);
         formatVoteYes.setFont(fontVoteYes);
         // Format objects
+        Wbook.setColourRGB(Colour.LIGHT_ORANGE, 255, 195, 195);
         WritableCellFormat formatVoteNo = new WritableCellFormat();
         formatVoteNo.setAlignment(Alignment.CENTRE);
         formatVoteNo.setVerticalAlignment(VerticalAlignment.CENTRE);

@@ -4,6 +4,7 @@
   color: #242424;
   width: 800px;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
+  max-width: 100%;
 }
 
 .Card_Header {

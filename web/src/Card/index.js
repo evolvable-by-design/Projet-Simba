@@ -1,11 +1,14 @@
 import React from 'react'
+import { FlatLogo } from '../Logo'
 import './Card.css'
 
 const Card = ({title, subtitle, children, footer, style}) => {
   return (
     <div className="Card_Container" style={style}>
       <div className="Card_Header">
-        <h1>{ title }</h1>
+        <h1>
+          { title }
+        </h1>
         <div className="Card_Header_Subtitle">{ subtitle }</div>
       </div>
       <div className="Card_Content">

@@ -5,6 +5,8 @@ import moment from 'moment'
 
 import {Link} from 'react-router-dom';
 
+import copy from 'copy-text-to-clipboard'
+
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import { BASE_URL, CALENDAR_MESSAGES } from '../utils/constants'
 import Card from '../Card';
@@ -96,7 +98,12 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
 
   const subtitle = (id) => (
     <div className="Poll_Subtitle">
+      <div className="Dates">
       <span>Créé {moment(data.createdAt).fromNow()}</span>
+      { data.createdAt !== data.updatedAt && 
+        <span>Modifié {moment(data.updatedAt).fromNow()}</span>
+      } 
+      </div>
     </div>
   )
 
@@ -254,7 +261,7 @@ const Choices = ({data, setChoices, choices, users, usernameError: error, userna
               )}
             </ul>
         </li>
-        {data.pollChoices.map((choice)=>(
+        {data.pollChoices.map((choice, index)=>(
             <li className="Cell_Option" key={choice.id}>
               <div className="Cell_Poll_Header">
                 <div className="Cell_Option_Name">
@@ -271,7 +278,7 @@ const Choices = ({data, setChoices, choices, users, usernameError: error, userna
                   <span>{choice.users.length}</span>
                 </div>
                 <div className="Cell_Option_New_Participant_Vote">
-                    <button className={"Checkbox_Btn" + (choices.indexOf(choice.id) !== -1 ? " Active" : "")} onClick={(e) => handleVote(choice.id)}>{choices.indexOf(choice.id) !== -1 && 
+                    <button className={"Checkbox_Btn" + (choices.indexOf(choice.id) !== -1 ? " Active" : "") + (index === (data.pollChoices.length - 1) ? " LastCheck" : "")} onClick={(e) => handleVote(choice.id)}>{choices.indexOf(choice.id) !== -1 && 
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     }
                     </button>
@@ -441,12 +448,20 @@ const Poll = (props) => {
 
       <div className="Links">
         <div className="Links_Left">
+            <Link to={`/create`} className="Feat_Link Unique">
+              <svg xmlns="http://www.w3.org/2000/svg" style={{marginRight: "0.5rem"}} width="16" height="16"  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Nouveau
+            </Link>
           { token && 
             <Link to={`/polls/${slug}/edit?t=${data.slugAdmin}`} className="Feat_Link Unique">
               <svg xmlns="http://www.w3.org/2000/svg" style={{marginRight: "0.5rem"}} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
               Modifier
             </Link>
           }
+          <a href="#" onClick={() => copy(`${window.location.protocol}//${window.location.host}/polls/${token}`)} className="Feat_Link">
+              <svg xmlns="http://www.w3.org/2000/svg" style={{marginRight: "0.5rem"}} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+              Partager
+            </a>
         </div>
         <div className="Links_Right">
           <a href={data.tlkURL} className="Feat_Link" target="_blank" rel="noopener noreferrer">

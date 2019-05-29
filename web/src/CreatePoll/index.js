@@ -11,6 +11,7 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CreatePoll.css'
 import {BASE_URL, CALENDAR_MESSAGES} from '../utils/constants'
 import copy from 'copy-text-to-clipboard'
+import { FlatLogo } from '../Logo';
 
 const Informations = ({next, title, location, description, setLocation, setTitle, setDescription, hasMeal, setMeal}) => {
 
@@ -90,8 +91,9 @@ const Choices = ({next, previous, choices, setChoices, createPoll, buttonName}) 
   const handleVote = () => {
     if(choices.length === 0) return
 
-    createPoll()
-    next()
+    createPoll(() => {
+      next()
+    })
   }
 
   const footer = (
@@ -156,7 +158,7 @@ const CreatePoll = (props) => {
 
   const [data, setData] = useState({})
 
-  const createPoll = () => {
+  const createPoll = (callback) => {
     const sendChoices = choices.map((choice) => {
       return {
         startDate: choice.start,
@@ -175,16 +177,17 @@ const CreatePoll = (props) => {
       if(res.status === 201) {
         //props.history.push(`/polls/${res.data.slug}`)
         setData(res.data)
+        callback()
       }
+    }).catch(err => {
+      alert(err)
     })
   }
 
   return (
     <>
     <div className="Container">
-      <h1>
-        Création d'un poll
-      </h1>
+      <FlatLogo height="50px" style={{marginBottom: "1rem"}}/>
       <Wizard>
       <Steps>
         <Step
