@@ -1,6 +1,6 @@
-# Projet-Simba
+# Simba-Project
 
-[Vidéo de démonstration](https://www.youtube.com/watch?v=sa0EgcHezP4)
+[Demonstration video](https://www.youtube.com/watch?v=sa0EgcHezP4)
 
 ## Goal
 
