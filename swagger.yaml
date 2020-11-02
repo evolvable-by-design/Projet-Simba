@@ -4,26 +4,15 @@ info:
   version: 1.0.0
   title: Swagger Projet Simba
 
-
 tags:
-  
   - name: Users
-
   - name: Polls
-
   - name: Pad
-  
   - name: Choices
-
   - name: Votes
-
   - name: Comments
-
   - name: Export
-
   - name: MealPreferences
-
-
 
 paths:   
   /api/users:
@@ -47,7 +36,7 @@ paths:
         - in: query
           name: user
           schema: 
-            type: User
+            $ref: '#/components/schemas/User'
           required: true
           description: properties of the new user to create
       responses:
@@ -93,7 +82,7 @@ paths:
         - in: query
           name: user
           schema:
-            type: User
+            $ref: '#/components/schemas/User'
           required: true
           description: the new user properties
       responses:
@@ -132,7 +121,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
       responses:
         '200':
@@ -160,7 +149,7 @@ paths:
         - in: query
           name: poll
           schema: 
-            type: Poll
+            $ref: '#/components/schemas/Poll'
           required: true
           description: the properties of the poll to create
       responses:
@@ -178,12 +167,12 @@ paths:
         - in: path
           name: slug
           schema: 
-            type: String
+            type: string
           required: true
         - in: query
           name: token
           schema: 
-            type: String
+            type: string
           required: false
       responses:
         '200':
@@ -203,18 +192,18 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: query
           name: poll
           schema:
-            type: Poll
+            $ref: '#/components/schemas/Poll'
           required: true
           description: the new properties of the poll to update
         - in: query
           name: token
           schema:   
-            type: String
+            type: string
           required: true
       responses:
         '200':
@@ -234,12 +223,12 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: query 
           name: token
           schema: 
-            type: String
+            type: string
       responses:
         '200':
           description: OK
@@ -257,7 +246,7 @@ paths:
         - in: path
           name: slug
           schema: 
-            type: String
+            type: string
           required: true 
       responses:
         '200':
@@ -275,7 +264,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
       responses:
         '200':
@@ -292,17 +281,19 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: query
           name: token
           schema:
-            type: String
+            type: string
           required: true
         - in: query
           name: choices
           schema:
-            type: List<Choice>
+            type: array
+            items:
+              $ref: '#/components/schemas/Choice'
           required: true
       responses:
         '201':
@@ -322,7 +313,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: query 
           name: token
@@ -332,7 +323,8 @@ paths:
         - in: query
           name: choices
           schema: 
-            type: HashMap<String, List<Long>>
+            type: object
+            format: HashMap<String, List<Long>>
           description: String = "choices" et Long = idChoice
           required: true
       responses:
@@ -402,7 +394,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: choiceId
@@ -425,7 +417,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: choiceId
@@ -436,13 +428,13 @@ paths:
         - in: query
           name: choice
           schema:
-            type: Choice
+            $ref: '#/components/schemas/Choice'
           required: true
           description: the new properties of the choice to update
         - in: query
           name: token
           schema: 
-            type: String
+            type: string
           required: true
       responses:
         '200':
@@ -461,7 +453,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: choiceId
@@ -484,7 +476,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: userId
@@ -495,7 +487,8 @@ paths:
         - in: query
           name: choices
           schema:
-            type: HashMap<String, List<Long>>
+            type: object
+            format: HashMap<String, List<Long>>
           description: String = "choices" et Long = idChoice
           required: true 
       responses:
@@ -518,7 +511,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: choiceId
@@ -570,7 +563,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
       responses:
         '200':
@@ -589,7 +582,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: commentId
@@ -615,7 +608,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: userId
@@ -626,7 +619,7 @@ paths:
         - in: query
           name: comment
           schema: 
-            type: Comment
+            $ref: '#/components/schemas/Comment'
           required: true
       responses:
         '201':
@@ -645,7 +638,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
       responses:
         '200':
@@ -663,7 +656,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: mealPreferenceId
@@ -688,7 +681,7 @@ paths:
         - in: path
           name: slug
           schema:
-            type: String
+            type: string
           required: true
         - in: path
           name: userId
@@ -699,7 +692,7 @@ paths:
         - in: query
           name: mealPreference
           schema: 
-            type: MealPreference
+            $ref: '#/components/schemas/MealPreference'
           required: true
       responses:
         '201':
@@ -718,7 +711,7 @@ paths:
         - in: path
           name: slug
           schema: 
-            type: String
+            type: string
           required: true
       responses:
         '200':
@@ -740,11 +733,17 @@ components:
         username:
           type: string
         userChoices:
-          type: List<Choice>
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice'
         userPolls:
-          type: List<Poll>
+          type: array
+          items:
+            $ref: '#/components/schemas/Poll'
         userMealPreferences:
-          type: List<MealPreference>
+          type: array
+          items:
+            $ref: '#/components/schemas/Choice'
     
     Choice:
       type: object
@@ -759,7 +758,27 @@ components:
           type: string
           format: date-time
         users:
-          type: List<Users>
+          $ref: '#/components/schemas/Users'
+            
+    Choices:
+      type: array
+      items: 
+        $ref: '#/components/schemas/Choice'
+        
+    Comments:
+      type: array
+      items: 
+        $ref: '#/components/schemas/Comment'
+    
+    MealPreferences:
+      type: array
+      items: 
+        $ref: '#/components/schemas/MealPreference'
+        
+    Users:
+      type: array
+      items: 
+        $ref: '#/components/schemas/User'
     
     Poll:
       type: object
@@ -788,13 +807,13 @@ components:
           type: string
           format: date-time
         pollChoices:
-          type: List<Choice>
+          $ref: '#/components/schemas/Choices'
         pollComments:
-          type: List<Comment>
+          $ref: '#/components/schemas/Comments'
         pollMealPreferences:
-          type: List<MealPreference>
+          $ref: '#/components/schemas/MealPreferences'
         padURL:  
-          type: String
+          type: string
 
 
     Comment:
@@ -806,7 +825,7 @@ components:
         content:
           type: string
         user:
-          type: User
+          $ref: '#/components/schemas/User'
 
 
     MealPreference:
@@ -818,11 +837,4 @@ components:
         content:
           type: string
         user:
-          type: User
-        
-
-
-        
-
-
-
+          $ref: '#/components/schemas/User'
