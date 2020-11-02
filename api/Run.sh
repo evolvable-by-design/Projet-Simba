@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 echo 'installing the mvn project .....................'
 
-mvn clean install -DskipTests
+mvn clean package -DskipTests
 
 echo 'building the simba app image .......................'
 
