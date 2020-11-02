@@ -32,13 +32,11 @@ paths:
          - Users
       summary: Create a new user
       operationId: createUser
-      parameters:
-        - in: query
-          name: user
-          schema: 
-            $ref: '#/components/schemas/User'
-          required: true
-          description: properties of the new user to create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
         '201':
           description:  Created
@@ -79,12 +77,11 @@ paths:
           schema:
             type: number
             format: int64
-        - in: query
-          name: user
-          schema:
-            $ref: '#/components/schemas/User'
-          required: true
-          description: the new user properties
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
       responses:
         '200':
           description: OK
@@ -145,13 +142,11 @@ paths:
         - Polls
       summary: Create a new poll
       operationId: createPoll
-      parameters:
-        - in: query
-          name: poll
-          schema: 
-            $ref: '#/components/schemas/Poll'
-          required: true
-          description: the properties of the poll to create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Poll'
       responses:
         '201': 
           description: Created
@@ -195,23 +190,22 @@ paths:
             type: string
           required: true
         - in: query
-          name: poll
-          schema:
-            $ref: '#/components/schemas/Poll'
-          required: true
-          description: the new properties of the poll to update
-        - in: query
           name: token
           schema:   
             type: string
           required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Poll'
       responses:
         '200':
           description: OK
         '401':
           description: Unauthorized
         '404':
-          description: Not Found          
+          description: Not Found
 
 
     delete: 
@@ -288,13 +282,11 @@ paths:
           schema:
             type: string
           required: true
-        - in: query
-          name: choices
-          schema:
-            type: array
-            items:
+      requestBody:
+        content:
+          application/json:
+            schema:
               $ref: '#/components/schemas/Choice'
-          required: true
       responses:
         '201':
           description: Created
@@ -379,9 +371,6 @@ paths:
           description: OK
         '404':
           description: Not Found
-
-
-  
       
 
   /api/polls/{slug}/choices/{choiceId}:
@@ -426,16 +415,15 @@ paths:
             format: int64
           required: true
         - in: query
-          name: choice
-          schema:
-            $ref: '#/components/schemas/Choice'
-          required: true
-          description: the new properties of the choice to update
-        - in: query
           name: token
           schema: 
             type: string
           required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Choice'
       responses:
         '200':
           description: OK
@@ -484,13 +472,13 @@ paths:
             type: number
             format: int64
           required: true
-        - in: query
-          name: choices
-          schema:
-            type: object
-            format: HashMap<String, List<Long>>
-          description: String = "choices" et Long = idChoice
-          required: true 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              format: HashMap<String, List<Long>>
+              description: String = "choices" et Long = idChoice
       responses:
         '200':
           description: OK
@@ -498,9 +486,6 @@ paths:
           description: Bad Request
         '404':
           description: Not Found
-      
-
-
 
   /api/polls/{slug}/choices/{choiceId}/removevote/{userId}:
     post:
@@ -616,11 +601,11 @@ paths:
             type: number
             format: int64
           required: true
-        - in: query
-          name: comment
-          schema: 
-            $ref: '#/components/schemas/Comment'
-          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
       responses:
         '201':
           description: Created
@@ -689,11 +674,11 @@ paths:
             type: number
             format: int64
           required: true
-        - in: query
-          name: mealPreference
-          schema: 
-            $ref: '#/components/schemas/MealPreference'
-          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MealPreference'
       responses:
         '201':
           description: Created
