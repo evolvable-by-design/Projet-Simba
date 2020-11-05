@@ -167,7 +167,6 @@ const CreatePoll = (props) => {
       }
     })
 
-    //axios.post(`${BASE_URL}/polls`, {
     axios.post(`${BASE_URL}/poll`, {
       title,
       description,

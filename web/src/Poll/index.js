@@ -53,39 +53,21 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
       return
     }
 
-    axios.post(`${BASE_URL}/users`, {
+    axios.post(`${BASE_URL}/poll/choiceuser`, {
       username,
+      // mail: this.personalInformation.mail,
+      pref: mealPreferences.trim(),
+      // ics: this.personalInformation.ics,
+      choices
+    }).then(() => {
+      refreshDataAndUsers()
+      setUsername("")
+      setChoices([])
+      setMealPreferences("")
     })
-      .then((res) => {
-        let {id:  userId} = res.data
-
-        axios.post(`${BASE_URL}/polls/${slug}/vote/${userId}`, {choices})
-          .then((voteRes) => {
-            refreshDataAndUsers()
-            setUsername("")
-            setChoices([])
-            setMealPreferences("")
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-
-        if(mealPreferences.trim() !== "") {
-          axios.post(`${BASE_URL}/polls/${slug}/mealpreference/${userId}`, {content: mealPreferences})
-            .then(res => {
-              setListMealPreferences([
-                ...listMealPreferences,
-                {...res.data}
-              ])
-            })
-        }
-
-      })
-      .catch((err) => {
-        console.log(`Erreur lors de la création d'user ${err}`)
-      })
-
-
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
   const footer = (
@@ -340,27 +322,20 @@ const Comments = ({data, username, setUsername, slug}) => {
   }
 
   const createComment = () => {
-    axios.post(`${BASE_URL}/users`, {
-      username,
+    axios.post(`${BASE_URL}/poll/comment/${slug}`, {
+      auteur: username,
+      content: comment
     })
-      .then((res) => {
-        let {id:  userId} = res.data
-        axios.post(`${BASE_URL}/polls/${slug}/comments/${userId}`, {content: comment})
-          .then(res => {
-            setComment("")
-            setComments([
-              ...comments,
-              res.data
-            ])
-          })
-          .catch(err => {
-            console.error(err)
-          })
-
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    .then(res => {
+      setComment("")
+      setComments([
+        ...comments,
+        res.data
+      ])
+    })
+    .catch(err => {
+      console.error(err)
+    })
   }
 
   const handleChange = (e) => {
@@ -374,7 +349,7 @@ const Comments = ({data, username, setUsername, slug}) => {
       <ul>
         { comments.map((comment) => (
           <li className="MealPref" key={comment.id}>
-            <span className="Author_Comment">{ comment.user.username }</span> : <span>{comment.content}</span>
+            <span className="Author_Comment">{ comment.auteur }</span> : <span>{comment.content}</span>
           </li>
         ))}
       </ul>
