@@ -118,21 +118,20 @@ const EditPoll = (props) => {
   }
 
 
-  
+  const [data, setData] = useState()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
   const [hasMeal, setMeal] = useState(false)
 
   const [choices, setChoices] = useState([])
-  const [initialChoices, setInitialChoices] = useState([])
   const [createdChoices, setCreatedChoices] = useState([])
   const [editedChoices, setEditedChoices] = useState([])
   const [deletedChoices, setDeletedChoices] = useState([])
 
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/polls/${slug}`)
+    axios.get(`${BASE_URL}/poll/aslug/${token}`)
     .then(res => {
       const data = res.data
 
@@ -140,6 +139,7 @@ const EditPoll = (props) => {
         props.history.push(`/polls/${slug}`)
       }
 
+      setData(data)
       setTitle(data.title)
       setDescription(data.description)
       setLocation(data.location)
@@ -154,7 +154,6 @@ const EditPoll = (props) => {
         }
       })
       setChoices(newChoices)
-      setInitialChoices(newChoices)
     })
     .catch((err) => {
       props.history.push('/')
@@ -162,72 +161,29 @@ const EditPoll = (props) => {
   }, [slug])
 
   const editPoll = () => {
-    let requests = []
+    const findChoice = (id) => data.pollChoices.find(ch => ch.id === id)
 
-    requests.push(axios.put(`${BASE_URL}/polls/${slug}?token=${token}`, {
-        title,
-        location,
-        description,
-        has_meal: hasMeal,
-        pollChoices: [],
-      }))
+    const newChoices = choices.map(c => ({
+      ...findChoice(c.resource),
+      startDate: c.start,
+      endDate: c.end
+    }))
 
-      const initialChoicesDic = {}
-      initialChoices.forEach(choice => initialChoicesDic[choice.resource] = choice)
-
-      const initialIds = initialChoices.map(choice => choice.resource)
-     
-
-      choices.forEach(choice => {
-        if(choice.resource !== undefined) {
-          let initChoice = initialChoicesDic[choice.resource]
-          console.log(initChoice)
-          console.log(choice)
-          if(initChoice.start !== choice.start || initChoice.end !== choice.end) {
-            requests.push(axios.put(`${BASE_URL}/polls/${slug}/choices/${choice.resource}?token=${token}`, {
-              startDate: choice.start,
-              endDate: choice.end,
-            }))
-          }
-        }
-      })
-
-      let choiceIds = choices.map(choice => choice.resource)
-      choiceIds = choiceIds.filter(choice => choice !== undefined)
-      let deletedIds = []
-    
-      initialIds.forEach(id => {
-        if(choiceIds.indexOf(id) === -1) {
-          deletedIds.push(id)
-        }
-      })
-
-      if(deletedIds.length !== 0) {
-        requests.push(axios.delete(`${BASE_URL}/polls/${slug}/choices/?token=${token}`, { data: { choices: deletedIds}}))
-      }
-
-
-      const createdChoices = choices.filter(choice => (choice.resource === undefined))
-      const createdChoicesFormatted = createdChoices.map((choice) => {
-        return {
-          startDate: choice.start,
-          endDate: choice.end,
-          name: choice.name
-        }
-      })
-
-      if(createdChoicesFormatted.length !== 0) {
-        requests.push(axios.post(`${BASE_URL}/polls/${slug}/choices?token=${token}`, createdChoicesFormatted))
-      }  
-
-      
-      Promise.all(requests)
-      .then((v) => {
-        props.history.push(`/polls/${slug}?t=${token}`)
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    axios.put(`${BASE_URL}/poll/update1`, {
+      ...data,
+      slugAdmin: token,
+      title,
+      location,
+      description,
+      has_meal: hasMeal,
+      pollChoices: newChoices,
+    })
+    .then(() => {
+      props.history.push(`/polls/${slug}?t=${token}`)
+    })
+    .catch(err => {
+      console.error(err)
+    })
   }
 
   return (
