@@ -1,0 +1,755 @@
+openapi: 3.0.0
+info:
+  description: ESIR2 Projet Simba - Smart Doodle
+  version: 1.0.0
+  title: Swagger Projet Simba
+
+tags:
+  - name: Users
+  - name: Polls
+  - name: Pad
+  - name: Choices
+  - name: Votes
+  - name: Comments
+  - name: MealPreferences
+
+paths:
+  /api/users:
+    post:
+      tags:
+        - Users
+      summary: Create a new user
+      operationId: createUser
+      x-@id: evolvable:createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreationRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          links:
+            commentPoll:
+              operationId: commentPoll
+              x-@relation: evolvable:rel/nextComment
+              parameters:
+                userId: $response.body#/id
+            vote:
+              operationId: vote
+              x-@relation: evolvable:rel/nextVote
+              x-affiliation: parent
+              parameters:
+                userId: $response.body#/id
+
+  /api/polls:
+    post:
+      tags:
+        - Polls
+      summary: Create a new poll
+      operationId: createPoll
+      x-@id: evolvable:createPoll
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PollCreationRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Poll'
+          links:
+            comment:
+              operationId: createUser
+              x-@relation: evolvable:rel/comment
+              x-affiliation: parent
+            vote:
+              operationId: createUser
+              x-@relation: evolvable:rel/vote
+              x-affiliation: parent
+            addChoice:
+              operationId: createChoices
+              x-@relation: evolvable:rel/addChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+            deleteChoice:
+              operationId: deleteChoiceFromPoll
+              x-@relation: evolvable:rel/deleteChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+            updateChoice:
+              operationId: updateChoice
+              x-@relation: evolvable:rel/updateChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+
+  /api/polls/{slug}:
+    get:
+      tags:
+        - Polls
+      summary: Get a specific poll by id
+      operationId: retrievePoll
+      x-@id:
+        - evolvable:getPoll
+        - evolvable:getPollBySlug
+        - evolvable:getPollWithoutAdminSlug
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Poll'
+          links:
+            comment:
+              operationId: createUser
+              x-@relation: evolvable:rel/comment
+              x-affiliation: parent
+            vote:
+              operationId: createUser
+              x-@relation: evolvable:rel/vote
+              x-affiliation: parent
+            addChoice:
+              operationId: createChoices
+              x-@relation: evolvable:rel/addChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+            deleteChoice:
+              operationId: deleteChoiceFromPoll
+              x-@relation: evolvable:rel/deleteChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+            updateChoice:
+              operationId: updateChoice
+              x-@relation: evolvable:rel/updateChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+
+
+    put:
+      tags:
+        - Polls
+      summary: Update a specific poll
+      operationId: updatePoll
+      x-@id: evolvable:updatePoll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PollUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Poll'
+          links:
+            comment:
+              operationId: createUser
+              x-@relation: evolvable:rel/comment
+              x-affiliation: parent
+            vote:
+              operationId: createUser
+              x-@relation: evolvable:rel/vote
+              x-affiliation: parent
+            addChoice:
+              operationId: createChoices
+              x-@relation: evolvable:rel/addChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+            deleteChoice:
+              operationId: deleteChoiceFromPoll
+              x-@relation: evolvable:rel/deleteChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+            updateChoice:
+              operationId: updateChoice
+              x-@relation: evolvable:rel/updateChoice
+              x-affiliation: parent
+              parameters:
+                slug: $response.body#/slug
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+
+  /api/polls/{slug}/choices:
+    post:
+      tags:
+        - Choices
+      summary: Create new choices for a specific poll
+      operationId: createChoices
+      x-@id: evolvable:addChoiceToPoll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChoiceCreationRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Choices'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+
+
+    delete:
+      tags:
+        - Choices
+      operationId: deleteChoiceFromPoll
+      x-@id: evolvable:deleteChoiceFromPoll
+      summary: Delete a specific choice associated to a specific poll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                choices:
+                  type: array
+                  items:
+                    type: number
+                    x-@type: evolvable:choiceId
+                    format: int64
+      responses:
+        '200':
+          description: OK
+        '401':
+          description: Unauthorized
+        '404':
+          description: Not Found
+
+
+  /api/polls/{slug}/choices/{choiceId}:
+    put:
+      tags:
+        - Choices
+      operationId: updateChoice
+      x-@id: evolvable:updatePollChoice
+      summary: Update a choice associated to a specific poll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: choiceId
+          schema:
+            type: number
+            format: int64
+          required: true
+        - in: query
+          name: token
+          schema:
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChoiceUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Choice'
+          links:
+            delete:
+              operationId: deleteChoiceFromPoll
+              x-@relation: evolvable:rel/delete
+              x-affiliation: parent
+              parameters:
+                slug: $request.path.slug
+                choices:
+                  - $response.body/#id
+            update:
+              operationId: updateChoice
+              x-@relation: evolvable:rel/update
+              x-affiliation: parent
+              parameters:
+                slug: $request.path.slug
+                choiceId: $response.body/#id
+        '401':
+          description: 'Unauthorized'
+        '404':
+          description: Not Found
+
+  /api/polls/{slug}/vote/{userId}:
+    post:
+      tags:
+        - Votes
+      operationId: vote
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: userId
+          schema:
+            type: number
+            format: int64
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                choices:
+                  type: array
+                  items:
+                    type: number
+                    x-@type: ChoiceId
+                    format: int64
+      responses:
+        '200':
+          description: OK
+          links:
+            addMealPreference:
+              operationId: vote
+              x-@relation: evolvable:rel/nextVote
+              parameters:
+                slug: $request.path.slug
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
+
+  /api/polls/{slug}/comments/{userId}:
+    post:
+      tags:
+        - Comments
+      operationId: createComment
+      x-@id: evolvable:commentPoll
+      summary: Creation of a new comment by a specific user
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: userId
+          schema:
+            type: number
+            format: int64
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreationRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: Not Found
+
+  /api/polls/{slug}/mealpreferences:
+    get:
+      tags:
+        - MealPreferences
+      operationId: getAllMealPreferencesFromPoll
+      summary: Get all meal preferences associated to a specific poll
+      parameters:
+        - in: path
+          name: slug
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Not Found
+
+components:
+  schemas:
+    User:
+      type: object
+      x-@type: evolvable:User
+      required:
+        - id
+        - username
+        - userChoices
+        - userPolls
+        - userMealPreferences
+      properties:
+        id:
+          type: number
+          format: long
+        username:
+          type: string
+        userChoices:
+          type: array
+          default: []
+          items:
+            $ref: '#/components/schemas/Choice'
+        userPolls:
+          type: array
+          default: []
+          items:
+            $ref: '#/components/schemas/Poll'
+        userMealPreferences:
+          type: array
+          default: []
+          items:
+            $ref: '#/components/schemas/Choice'
+    UserCreationRequest:
+      type: object
+      required:
+        - username
+      properties:
+        username:
+          type: string
+
+    Choice:
+      type: object
+      x-@type: evolvable:Choice
+      required:
+        - id
+        - startDate
+        - endDate
+        - users
+      properties:
+        id:
+          x-@id:
+            - evolvable:id
+            - evolvable:choiceId
+          x-@type:
+            - evolvable:Id
+            - evolvable:ChoiceId
+          type: number
+          format: long
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        users:
+          $ref: '#/components/schemas/Users'
+      links:
+        delete:
+          operationId: deleteChoiceFromPoll
+          x-@relation: evolvable:rel/delete
+          x-affiliation: parent
+          parameters:
+            slug: $request.path.slug
+            choices:
+              - $response.body/#id
+        update:
+          operationId: updateChoice
+          x-@relation: evolvable:rel/update
+          x-affiliation: parent
+          parameters:
+            slug: $request.path.slug
+            choiceId: $response.body/#id
+
+    ChoiceCreationRequest:
+      type: array
+      items:
+        type: object
+        required:
+          - startDate
+          - endDate
+        properties:
+          startDate:
+            type: string
+            format: date-time
+          endDate:
+            type: string
+            format: date-time
+          name:
+            type: string
+
+    ChoiceUpdateRequest:
+      type: object
+      required:
+        - startDate
+        - endDate
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+
+
+    Choices:
+      type: array
+      x-@type: evolvable:Choices
+      default: []
+      items:
+        $ref: '#/components/schemas/Choice'
+
+    Comments:
+      type: array
+      x-@type: evolvable:Comments
+      default: []
+      items:
+        $ref: '#/components/schemas/Comment'
+
+    MealPreferences:
+      type: array
+      x-@type: evolvable:MealPreferences
+      default: []
+      items:
+        $ref: '#/components/schemas/MealPreference'
+
+    Users:
+      type: array
+      x-@type: evolvable:Users
+      default: []
+      items:
+        $ref: '#/components/schemas/User'
+
+    Poll:
+      type: object
+      x-@type: evolvable:Poll
+      required:
+        - id
+        - title
+        - location
+        - has_meal
+        - slug
+        - createdAt
+        - updatedAt
+        - pollChoices
+      properties:
+        id:
+          type: number
+          format: long
+        title:
+          type: string
+        location:
+          type: string
+        description:
+          type: string
+        has_meal:
+          type: boolean
+        slug:
+          type: string
+        slugAdmin:
+          type: string
+        tlkURL:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        pollChoices:
+          $ref: '#/components/schemas/Choices'
+        pollComments:
+          $ref: '#/components/schemas/Comments'
+        pollMealPreferences:
+          $ref: '#/components/schemas/MealPreferences'
+        padURL:
+          type: string
+
+    PollCreationRequest:
+      type: object
+      required:
+        - title
+        - description
+        - location
+        - has_meal
+        - pollChoices
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        has_meal:
+          type: boolean
+        pollChoices:
+          $ref: '#/components/schemas/Choices'
+
+    PollUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        has_meal:
+          type: boolean
+
+    Comment:
+      type: object
+      x-@type: evolvable:Comment
+      required:
+        - id
+        - content
+        - user
+      properties:
+        id:
+          type: number
+          format: long
+        content:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+    CommentCreationRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+
+
+    MealPreference:
+      type: object
+      required:
+        - id
+        - content
+        - user
+      properties:
+        id:
+          type: number
+          format: long
+        content:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+
+
+# json-LD context
+x-@context:
+  x-@context: '@context'
+  x-@id: '@id'
+  x-@type: '@type'
+  x-@relation: 'dce:relation'
+  schema: 'http://schema.org/'
+  evolvable: 'https://github.com/evolvable-by-design/use-cases/simba/vocab#'
+  id:
+    x-@id: evolvable:id
+    x-@type: evolvable:Id
+  choiceId:
+    x-@id: evolvable:choiceId
+    x-@type:
+      - evolvable:Id
+      - evolvable:ChoiceId
+  userId:
+    x-@id: evolvable:userId
+    x-@type:
+      - evolvable:Id
+      - evolvable:UserId
+  slug: evolvable:slug
+  aslug: evolvable:adminSlug
+  adminSlug: evolvable:adminSlug
+  slugAdmin: evolvable:adminSlug
+  token: evolvable:adminSlug
+  title: evolvable:title
+  description: schema:description
+  createdAt: schema:dateCreated
+  updatedAt: schema:dateModified
+  mail: evolvable:email
+  ics: evolvable:ics
+  icsurl: evolvable:icsurl
+  username: evolvable:username
+  location: evolvable:pollLocation
+  has_meal: evolvable:has_meal
+  endDate:
+    x-@id: schema:endDate
+    x-@type: schema:DateTime
+  startDate:
+    x-@id: schema:startDate
+    x-@type: schema:DateTime
+  users: evolvable:users
+  auteur: schema:author
+  content: evolvable:content
+  clos: evolvable:closed
+  padURL: evolvable:padURL
+  pollChoices: evolvable:pollChoices
+  pollComments: evolvable:pollComments
+  selectedChoice: evolvable:selectedChoice
+  tlkURL: evolvable:tlkURL
+  choices: evolvable:pollChoices

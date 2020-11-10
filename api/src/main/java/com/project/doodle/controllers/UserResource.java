@@ -1,5 +1,7 @@
 package com.project.doodle.controllers;
 
+import com.project.doodle.evolvablebydesign.HypermediaControlsManager;
+import com.project.doodle.evolvablebydesign.HypermediaRepresentation;
 import com.project.doodle.models.Choice;
 import com.project.doodle.models.Poll;
 import com.project.doodle.models.User;
@@ -16,6 +18,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -30,24 +33,24 @@ public class UserResource {
     private UserRepository userRepository;
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> retrieveAllUsers() {
+    public ResponseEntity<List<HypermediaRepresentation<User>>> retrieveAllUsers() {
         // On récupère tous les utilisateurs qu'on trie ensuite par username
         List<User> users = userRepository.findAll(Sort.by(Sort.Direction.ASC,"username"));
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<>(withLinks(users), HttpStatus.OK);
     }
 
     @GetMapping("/users/{idUser}")
-    public ResponseEntity<User> retrieveUser(@PathVariable long idUser) {
+    public ResponseEntity<HypermediaRepresentation<User>> retrieveUser(@PathVariable long idUser) {
         // On vérifie que l'utilisateur existe
         Optional<User> user = userRepository.findById(idUser);
         if (!user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        return new ResponseEntity<>(HypermediaControlsManager.addUserLinks(user.get()), HttpStatus.OK);
     }
 
     @GetMapping("/polls/{slug}/users")
-    public ResponseEntity<List<User>> getAllUserFromPoll(@PathVariable String slug){
+    public ResponseEntity<List<HypermediaRepresentation<User>>> getAllUserFromPoll(@PathVariable String slug){
         List<User> users = new ArrayList<>();
         // On vérifie que le poll existe
         Optional<Poll> poll = pollRepository.findBySlug(slug);
@@ -67,11 +70,11 @@ public class UserResource {
                 }
             }
         }
-        return new ResponseEntity<>(users, HttpStatus.OK);
+        return new ResponseEntity<>(withLinks(users), HttpStatus.OK);
     }
 
     @DeleteMapping("/users/{idUser}")
-    public ResponseEntity<User> deleteUser(@PathVariable long idUser) {
+    public ResponseEntity<HypermediaRepresentation<User>> deleteUser(@PathVariable long idUser) {
         // On vérifie que l'utilisateur existe
         Optional<User> user = userRepository.findById(idUser);
         if (!user.isPresent()) {
@@ -87,18 +90,18 @@ public class UserResource {
 
         // On supprime l'utilisateur de la bdd
         userRepository.deleteById(idUser);
-        return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        return new ResponseEntity<>(HypermediaControlsManager.addUserLinks(user.get()), HttpStatus.OK);
     }
 
     @PostMapping("/users")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<HypermediaRepresentation<User>> createUser(@Valid @RequestBody User user) {
        // On sauvegarde l'utilisateur dans la bdd
         User savedUser = userRepository.save(user);
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        return new ResponseEntity<>(HypermediaControlsManager.addUserLinks(savedUser), HttpStatus.CREATED);
     }
 
     @PutMapping("/users/{idUser}")
-    public ResponseEntity<User> updateUser(@PathVariable long idUser, @Valid @RequestBody User user) {
+    public ResponseEntity<HypermediaRepresentation<User>> updateUser(@PathVariable long idUser, @Valid @RequestBody User user) {
         // On vérifie que l'utilisateur existe
         Optional<User> optionalUser = userRepository.findById(idUser);
         if (!optionalUser.isPresent()) {
@@ -111,6 +114,12 @@ public class UserResource {
         }
         // On update l'utilisateur dans la bdd
         User updatedUser = userRepository.save(ancientUser);
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        return new ResponseEntity<>(HypermediaControlsManager.addUserLinks(updatedUser), HttpStatus.OK);
+    }
+
+    private List<HypermediaRepresentation<User>> withLinks(List<User> users) {
+        return users.stream()
+          .map(HypermediaControlsManager::addUserLinks)
+          .collect(Collectors.toList());
     }
 }

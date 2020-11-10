@@ -1,5 +1,8 @@
 package com.project.doodle.controllers;
 
+import com.project.doodle.evolvablebydesign.HypermediaControlsManager;
+import com.project.doodle.evolvablebydesign.HypermediaRepresentation;
+import com.project.doodle.models.Choice;
 import com.project.doodle.models.Poll;
 import com.project.doodle.repositories.PollRepository;
 import net.gjerull.etherpad.client.EPLiteClient;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.project.doodle.Utils.generateSlug;
 
@@ -29,14 +33,14 @@ public class PollResource {
     private EPLiteClient client = new EPLiteClient(padUrl, apikey);
 
     @GetMapping("/polls")
-    public ResponseEntity<List<Poll>> retrieveAllpolls() {
+    public ResponseEntity<List<HypermediaRepresentation<Poll>>> retrieveAllpolls() {
         // On récupère la liste de tous les poll qu'on trie ensuite par titre
         List<Poll> polls = pollRepository.findAll(Sort.by(Sort.Direction.ASC,"title"));
-        return new ResponseEntity<>(polls, HttpStatus.OK);
+        return new ResponseEntity<>(withLinks(polls), HttpStatus.OK);
     }
 
     @GetMapping("/polls/{slug}")
-    public ResponseEntity<Poll> retrievePoll(@PathVariable String slug, @RequestParam(required = false) String token) {
+    public ResponseEntity<HypermediaRepresentation<Poll>> retrievePoll(@PathVariable String slug, @RequestParam(required = false) String token) {
         // On vérifie que le poll existe
         Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()) {
@@ -46,7 +50,7 @@ public class PollResource {
         if (token != null && !poll.get().getSlugAdmin().equals(token)){
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        return new ResponseEntity<>(poll.get(), HttpStatus.OK);
+        return new ResponseEntity<>(HypermediaControlsManager.addPollLinks(poll.get()), HttpStatus.OK);
     }
 
     @GetMapping("/polls/{slug}/pad")
@@ -60,7 +64,7 @@ public class PollResource {
     }
 
     @DeleteMapping("/polls/{slug}")
-    public ResponseEntity<Poll> deletePoll(@PathVariable String slug, @RequestParam String token) {
+    public ResponseEntity<HypermediaRepresentation<Poll>> deletePoll(@PathVariable String slug, @RequestParam String token) {
         // On vérifie que le poll existe
         Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()) {
@@ -80,11 +84,11 @@ public class PollResource {
         client.deletePad(getPadId(poll.get()));
         // On supprime le poll de la bdd
         pollRepository.deleteById(poll.get().getId());
-        return new ResponseEntity<>(poll.get(), HttpStatus.OK);
+        return new ResponseEntity<>(HypermediaControlsManager.addPollLinks(poll.get()), HttpStatus.OK);
     }
 
     @PostMapping("/polls")
-    public ResponseEntity<Poll> createPoll(@Valid @RequestBody Poll poll) {
+    public ResponseEntity<HypermediaRepresentation<Poll>> createPoll(@Valid @RequestBody Poll poll) {
         // On enregistre le poll dans la bdd
         String padId = generateSlug(6);
         client.createPad(padId);
@@ -92,11 +96,11 @@ public class PollResource {
         //poll.setPadURL(padUrl+"p/"+padId);
         poll.setPadURL(padUrlLocalhost+"p/"+padId);
         Poll savedPoll = pollRepository.save(poll);
-        return new ResponseEntity<>(savedPoll, HttpStatus.CREATED);
+        return new ResponseEntity<>(HypermediaControlsManager.addPollLinks(savedPoll), HttpStatus.CREATED);
     }
 
     @PutMapping("/polls/{slug}")
-    public ResponseEntity<Object> updatePoll(@Valid @RequestBody Poll poll, @PathVariable String slug, @RequestParam String token) {
+    public ResponseEntity<HypermediaRepresentation<Poll>> updatePoll(@Valid @RequestBody Poll poll, @PathVariable String slug, @RequestParam String token) {
         // On vérifie que le poll existe
         Optional<Poll> optionalPoll = pollRepository.findBySlug(slug);
         if (!optionalPoll.isPresent())
@@ -134,7 +138,7 @@ public class PollResource {
         client.setText(padId, ancientPad);
         // On enregistre le poll dans la bdd
         Poll updatedPoll = pollRepository.save(ancientPoll);
-        return new ResponseEntity<>(updatedPoll, HttpStatus.OK);
+        return new ResponseEntity<>(HypermediaControlsManager.addPollLinks(updatedPoll), HttpStatus.OK);
     }
 
     private static void initPad(String pollTitle, String pollLocation, String pollDescription, EPLiteClient client, String padId) {
@@ -146,5 +150,11 @@ public class PollResource {
 
     private static String getPadId(Poll poll){
         return poll.getPadURL().substring(poll.getPadURL().length()-6);
+    }
+
+    private List<HypermediaRepresentation<Poll>> withLinks(List<Poll> polls) {
+        return polls.stream()
+          .map(HypermediaControlsManager::addPollLinks)
+          .collect(Collectors.toList());
     }
 }

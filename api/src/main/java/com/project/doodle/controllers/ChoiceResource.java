@@ -1,5 +1,7 @@
 package com.project.doodle.controllers;
 
+import com.project.doodle.evolvablebydesign.HypermediaControlsManager;
+import com.project.doodle.evolvablebydesign.HypermediaRepresentation;
 import com.project.doodle.models.Choice;
 import com.project.doodle.models.Poll;
 import com.project.doodle.models.User;
@@ -16,6 +18,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -30,28 +33,29 @@ public class ChoiceResource {
     private UserRepository userRepository;
 
     @GetMapping("/polls/{slug}/choices")
-    public ResponseEntity<List<Choice>> retrieveAllChoicesFromPoll(@PathVariable String slug) {
+    public ResponseEntity<List<HypermediaRepresentation<Choice>>> retrieveAllChoicesFromPoll(@PathVariable String slug) {
         // On vérifie que le choix existe
         Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         List<Choice> choices = choiceRepository.findAll(Sort.by(Sort.Direction.ASC,"startDate"));
-        return new ResponseEntity<>(choices, HttpStatus.OK);
+
+        return new ResponseEntity<>(withLinks(choices), HttpStatus.OK);
     }
 
     @GetMapping("/users/{idUser}/choices")
-    public ResponseEntity<List<Choice>> retrieveAllChoicesFromUser(@PathVariable long idUser) {
+    public ResponseEntity<List<HypermediaRepresentation<Choice>>> retrieveAllChoicesFromUser(@PathVariable long idUser) {
         // On vérifie que l'utilisateur existe
         Optional<User> user = userRepository.findById(idUser);
         if (!user.isPresent()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(user.get().getUserChoices(), HttpStatus.OK);
+        return new ResponseEntity<>(withLinks(user.get().getUserChoices()), HttpStatus.OK);
     }
 
     @GetMapping("/polls/{slug}/choices/{idChoice}")
-    public ResponseEntity<Choice> retrieveChoiceFromPoll(@PathVariable String slug, @PathVariable long idChoice) {
+    public ResponseEntity<HypermediaRepresentation<Choice>> retrieveChoiceFromPoll(@PathVariable String slug, @PathVariable long idChoice) {
         // On vérifie que le choix et le poll existent
         Optional<Poll> poll = pollRepository.findBySlug(slug);
         Optional<Choice> choice = choiceRepository.findById(idChoice);
@@ -62,11 +66,14 @@ public class ChoiceResource {
         if(!poll.get().getPollChoices().contains(choice.get())){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(choice.get(), HttpStatus.OK);
+        return new ResponseEntity<>(
+          HypermediaControlsManager.addChoiceLinks(choice.get()),
+          HttpStatus.OK
+        );
     }
 
     @GetMapping("/users/{idUser}/choices/{idChoice}")
-    public ResponseEntity<Choice> retrieveChoiceFromUser(@PathVariable long idUser, @PathVariable long idChoice) {
+    public ResponseEntity<HypermediaRepresentation<Choice>> retrieveChoiceFromUser(@PathVariable long idUser, @PathVariable long idChoice) {
         // On vérifie que le choix et l'utilisateur existent
         Optional<User> user = userRepository.findById(idUser);
         Optional<Choice> choice = choiceRepository.findById(idChoice);
@@ -77,7 +84,10 @@ public class ChoiceResource {
         if(!user.get().getUserChoices().contains(choice.get())){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(choice.get(), HttpStatus.OK);
+        return new ResponseEntity<>(
+          HypermediaControlsManager.addChoiceLinks(choice.get()),
+          HttpStatus.OK
+        );
     }
 
     @DeleteMapping("/polls/{slug}/choices")
@@ -115,7 +125,7 @@ public class ChoiceResource {
     }
 
     @PostMapping("/polls/{slug}/choices")
-    public ResponseEntity<List<Choice>> createChoices(@RequestBody List<Choice> choices, @PathVariable String slug, @RequestParam String token) {
+    public ResponseEntity<List<HypermediaRepresentation<Choice>>> createChoices(@RequestBody List<Choice> choices, @PathVariable String slug, @RequestParam String token) {
         // On vérifie que le poll existe
         Optional<Poll> poll = pollRepository.findBySlug(slug);
         if (!poll.isPresent()){
@@ -130,11 +140,11 @@ public class ChoiceResource {
             poll.get().addChoice(choice);
             pollRepository.save(poll.get());
         }
-        return new ResponseEntity<>(choices, HttpStatus.CREATED);
+        return new ResponseEntity<>(withLinks(choices), HttpStatus.CREATED);
     }
 
     @PutMapping("/polls/{slug}/choices/{idChoice}")
-    public ResponseEntity<Choice> updateChoice(@Valid @RequestBody Choice choice, @PathVariable String slug, @PathVariable long idChoice, @RequestParam String token) {
+    public ResponseEntity<HypermediaRepresentation<Choice>> updateChoice(@Valid @RequestBody Choice choice, @PathVariable String slug, @PathVariable long idChoice, @RequestParam String token) {
         // On vérifie que le poll et le choix existent
         Optional<Poll> pollOptional = pollRepository.findBySlug(slug);
         Optional<Choice> choiceOptional = choiceRepository.findById(idChoice);
@@ -159,7 +169,10 @@ public class ChoiceResource {
         }
         // On update la bdd
         Choice updatedChoice = choiceRepository.save(ancientChoice);
-        return new ResponseEntity<>(updatedChoice, HttpStatus.OK);
+        return new ResponseEntity<>(
+          HypermediaControlsManager.addChoiceLinks(updatedChoice),
+          HttpStatus.OK
+        );
     }
 
     @PostMapping("/polls/{slug}/vote/{idUser}")
@@ -189,7 +202,12 @@ public class ChoiceResource {
             optchoice.get().addUser(user.get());
             choiceRepository.save(optchoice.get());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+
+        boolean hasMeal = poll.map(Poll::isHas_meal).orElse(false);
+        HypermediaRepresentation<Object> body = HypermediaRepresentation.empty()
+          .withLink(hasMeal ? "addMealPreference" : null)
+          .build();
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
     @PostMapping("/polls/{slug}/choices/{idChoice}/removevote/{idUser}")
@@ -232,5 +250,11 @@ public class ChoiceResource {
         }
         // On compte le nombre de vote pour le choix
         return new ResponseEntity<>(choice.get().getUsers().size(),HttpStatus.OK);
+    }
+
+    private List<HypermediaRepresentation<Choice>> withLinks(List<Choice> choices) {
+        return choices.stream()
+          .map(HypermediaControlsManager::addChoiceLinks)
+          .collect(Collectors.toList());
     }
 }
