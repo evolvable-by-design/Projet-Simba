@@ -9,7 +9,8 @@ import { Link } from 'react-router-dom'
 import Card from '../Card';
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CreatePoll.css'
-import {BASE_URL, CALENDAR_MESSAGES} from '../utils/constants'
+import {CALENDAR_MESSAGES} from '../utils/constants'
+import { getBaseUrl } from '../utils/apiVersionManager'
 import copy from 'copy-text-to-clipboard'
 import { FlatLogo } from '../Logo';
 
@@ -167,7 +168,7 @@ const CreatePoll = (props) => {
       }
     })
 
-    axios.post(`${BASE_URL}/polls`, {
+    axios.post(`${getBaseUrl()}/polls`, {
       title,
       description,
       location,
