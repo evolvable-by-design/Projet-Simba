@@ -46,7 +46,7 @@ services:
       - mydb
       - etherpad
     ports : 
-      - 8080:7777
+      - 8081:8080
 
 
 
