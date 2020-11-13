@@ -1,9 +1,12 @@
+import { useMemo } from 'react'
+import { useLocation } from "react-router-dom"
+
 import CONFIG from '../CONFIG.json'
 
 export const API_VERSION_QUERY_PARAM_KEY = 'api-version'
 
-export function getApiVersion() {
-  return getQueryParams(API_VERSION_QUERY_PARAM_KEY) || null
+export function useApiVersion() {
+  return useQueryParams(API_VERSION_QUERY_PARAM_KEY) || null
 }
 
 export function setApiVersion(version) {
@@ -18,8 +21,8 @@ export function setApiVersion(version) {
   window.location.assign(urlWithVersion)
 }
 
-export function getBaseUrl() {
-  const versionNumber = getApiVersion()
+export function useBaseUrl() {
+  const versionNumber = useApiVersion()
 
   if (versionNumber === null) {
     setApiVersion(1)
@@ -28,17 +31,22 @@ export function getBaseUrl() {
   }
 }
 
-function getQueryParams(values) {
-  const queryParams = new URLSearchParams(window.location.search)
+function useQueryParams(values) {
+  const location = useLocation()
+  const queryParams = useMemo(() => new URLSearchParams(location.search), [ location.search ])
 
-  if (typeof values === 'string') {
-    return queryParams.get(values)
-  } else if (values instanceof Array) {
-    return values.reduce((acc, value) => {
-      acc[value] = queryParams.get(value)
-      return acc
-    }, {})
-  } else {
-    return queryParams
-  }
+  const result = useMemo(() => {
+    if (typeof values === 'string') {
+      return queryParams.get(values)
+    } else if (values instanceof Array) {
+      return values.reduce((acc, value) => {
+        acc[value] = queryParams.get(value)
+        return acc
+      }, {})
+    } else {
+      return queryParams
+    }
+  }, [queryParams, values])
+
+  return result
 }

@@ -8,25 +8,35 @@ import Poll from './Poll';
 import EditPoll from './EditPoll';
 import Home from './Home';
 import { history } from './History';
-import { getApiVersion, setApiVersion } from './utils/apiVersionManager';
+import { useApiVersion, setApiVersion } from './utils/apiVersionManager';
+import { usePivo } from './evolvable-by-design/use-pivo';
 
 function App() {
-
-  initialiseApiVersionUsage()
-
   return (
     <Router history={history}>
-      <Header />
-      <Route path='/' exact component={Home}/>
-      <Route path='/create' exact component={CreatePoll}/>
-      <Route path='/polls/:slug' exact component={Poll}/>
-      <Route path='/polls/:slug/edit' exact component={EditPoll}/>
+      <Application />
     </Router>
   );
 }
 
-function initialiseApiVersionUsage() {
-  if (getApiVersion() === null) {
+function Application() {
+
+  useInitialiseApiVersionUsage()
+
+  usePivo() // test
+
+  return (<>
+    <Header />
+    <Route path='/' exact component={Home}/>
+    <Route path='/create' exact component={CreatePoll}/>
+    <Route path='/polls/:slug' exact component={Poll}/>
+    <Route path='/polls/:slug/edit' exact component={EditPoll}/>
+  </>)
+}
+
+function useInitialiseApiVersionUsage() {
+  const apiVersion = useApiVersion()
+  if (apiVersion === null) {
     setApiVersion(1)
   }
 }

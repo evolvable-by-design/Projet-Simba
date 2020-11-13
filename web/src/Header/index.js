@@ -1,11 +1,12 @@
 import React from 'react'
 
-import { getApiVersion, setApiVersion } from '../utils/apiVersionManager';
+import { useApiVersion, setApiVersion } from '../utils/apiVersionManager';
 import './Header.css'
 
 const Header = () => {
 
-  const checked = getApiVersion() === 2 || getApiVersion() === '2'
+  const apiVersion = useApiVersion()
+  const checked = apiVersion === '2'
 
   const onSwitchChange = (e) => {
     const version = e.target.checked ? 2 : 1

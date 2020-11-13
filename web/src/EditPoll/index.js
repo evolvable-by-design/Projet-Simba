@@ -9,7 +9,7 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import { Informations } from '../CreatePoll';
 import { CALENDAR_MESSAGES } from '../utils/constants'
-import { getBaseUrl } from '../utils/apiVersionManager'
+import { useBaseUrl } from '../utils/apiVersionManager'
 import 'moment/locale/fr'
 import Card from '../Card';
 
@@ -131,9 +131,10 @@ const EditPoll = (props) => {
   const [editedChoices, setEditedChoices] = useState([])
   const [deletedChoices, setDeletedChoices] = useState([])
 
+  const apiBaseUrl = useBaseUrl()
 
   useEffect(() => {
-    axios.get(`${getBaseUrl()}/polls/${slug}`)
+    axios.get(`${apiBaseUrl}/polls/${slug}`)
     .then(res => {
       const data = res.data
 
@@ -165,7 +166,7 @@ const EditPoll = (props) => {
   const editPoll = () => {
     let requests = []
 
-    requests.push(axios.put(`${getBaseUrl()}/polls/${slug}?token=${token}`, {
+    requests.push(axios.put(`${apiBaseUrl}/polls/${slug}?token=${token}`, {
         title,
         location,
         description,
@@ -185,7 +186,7 @@ const EditPoll = (props) => {
           console.log(initChoice)
           console.log(choice)
           if(initChoice.start !== choice.start || initChoice.end !== choice.end) {
-            requests.push(axios.put(`${getBaseUrl()}/polls/${slug}/choices/${choice.resource}?token=${token}`, {
+            requests.push(axios.put(`${apiBaseUrl}/polls/${slug}/choices/${choice.resource}?token=${token}`, {
               startDate: choice.start,
               endDate: choice.end,
             }))
@@ -204,7 +205,7 @@ const EditPoll = (props) => {
       })
 
       if(deletedIds.length !== 0) {
-        requests.push(axios.delete(`${getBaseUrl()}/polls/${slug}/choices/?token=${token}`, { data: { choices: deletedIds}}))
+        requests.push(axios.delete(`${apiBaseUrl}/polls/${slug}/choices/?token=${token}`, { data: { choices: deletedIds}}))
       }
 
 
@@ -218,7 +219,7 @@ const EditPoll = (props) => {
       })
 
       if(createdChoicesFormatted.length !== 0) {
-        requests.push(axios.post(`${getBaseUrl()}/polls/${slug}/choices?token=${token}`, createdChoicesFormatted))
+        requests.push(axios.post(`${apiBaseUrl}/polls/${slug}/choices?token=${token}`, createdChoicesFormatted))
       }  
 
       

@@ -10,7 +10,7 @@ import Card from '../Card';
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import './CreatePoll.css'
 import {CALENDAR_MESSAGES} from '../utils/constants'
-import { getBaseUrl } from '../utils/apiVersionManager'
+import { useBaseUrl } from '../utils/apiVersionManager'
 import copy from 'copy-text-to-clipboard'
 import { FlatLogo } from '../Logo';
 
@@ -159,6 +159,8 @@ const CreatePoll = (props) => {
 
   const [data, setData] = useState({})
 
+  const apiBaseUrl = useBaseUrl()
+
   const createPoll = (callback) => {
     const sendChoices = choices.map((choice) => {
       return {
@@ -168,7 +170,7 @@ const CreatePoll = (props) => {
       }
     })
 
-    axios.post(`${getBaseUrl()}/polls`, {
+    axios.post(`${apiBaseUrl}/polls`, {
       title,
       description,
       location,
