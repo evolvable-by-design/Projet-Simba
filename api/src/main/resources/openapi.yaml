@@ -4,14 +4,18 @@ info:
   version: 1.0.0
   title: Swagger Projet Simba
 
+servers: 
+- url: 'http://localhost:8080'
+  description: Development server
+
 tags:
-  - name: Users
-  - name: Polls
-  - name: Pad
-  - name: Choices
-  - name: Votes
-  - name: Comments
-  - name: MealPreferences
+- name: Users
+- name: Polls
+- name: Pad
+- name: Choices
+- name: Votes
+- name: Comments
+- name: MealPreferences
 
 paths:
   /api/users:
@@ -449,30 +453,13 @@ components:
       required:
         - id
         - username
-        - userChoices
-        - userPolls
-        - userMealPreferences
       properties:
         id:
           type: number
           format: long
         username:
           type: string
-        userChoices:
-          type: array
-          default: []
-          items:
-            $ref: '#/components/schemas/Choice'
-        userPolls:
-          type: array
-          default: []
-          items:
-            $ref: '#/components/schemas/Poll'
-        userMealPreferences:
-          type: array
-          default: []
-          items:
-            $ref: '#/components/schemas/Choice'
+
     UserCreationRequest:
       type: object
       required:
@@ -480,6 +467,19 @@ components:
       properties:
         username:
           type: string
+          
+    ChoiceCreation:
+      type: object
+      required:
+        - startDate
+        - endDate
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
 
     Choice:
       type: object
@@ -561,6 +561,13 @@ components:
       default: []
       items:
         $ref: '#/components/schemas/Choice'
+        
+    ChoicesCreation:
+      type: array
+      x-@type: evolvable:Choices
+      default: []
+      items:
+        $ref: '#/components/schemas/ChoiceCreation'
 
     Comments:
       type: array
@@ -646,7 +653,7 @@ components:
         has_meal:
           type: boolean
         pollChoices:
-          $ref: '#/components/schemas/Choices'
+          $ref: '#/components/schemas/ChoicesCreation'
 
     PollUpdateRequest:
       type: object
