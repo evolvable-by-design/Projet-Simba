@@ -9,7 +9,6 @@ import EditPoll from './EditPoll';
 import Home from './Home';
 import { history } from './History';
 import { useApiVersion, setApiVersion } from './utils/apiVersionManager';
-import { usePivo } from './evolvable-by-design/use-pivo';
 
 function App() {
   return (
@@ -22,8 +21,6 @@ function App() {
 function Application() {
 
   useInitialiseApiVersionUsage()
-
-  usePivo() // test
 
   return (<>
     <Header />

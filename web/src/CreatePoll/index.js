@@ -80,7 +80,7 @@ const Choices = ({next, previous, choices, setChoices, createPoll, buttonName}) 
 
   const handleCreate = ({start, end}) => {
     if(!sameDay(start, end)) return
-    setChoices([...choices, {start, end, name: ""}])
+    setChoices([...choices, {start, end}])
   }
 
   const handleSelect = (event) => {
@@ -166,7 +166,6 @@ const CreatePoll = (props) => {
       return {
         startDate: choice.start,
         endDate: choice.end,
-        name: choice.name
       }
     })
 
