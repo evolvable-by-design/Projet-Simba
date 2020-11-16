@@ -131,19 +131,25 @@ const Choices = ({next, previous, choices, setChoices, createPoll, buttonName}) 
 const Recap = (props) => {
   const location = window.location
   const [hasCopiedLink, setHasCopiedLink] = useState(false) 
-  const [hasCopiedAdminLink, setHasCopiedAdminLink] = useState(false) 
+  const [hasCopiedAdminLink, setHasCopiedAdminLink] = useState(false)
+
+  const redirectToPollLink = `/polls/${props.data.slug}${location.search}`
+
+  const tokenSearchParam = `t=${props.data.slugAdmin}`
+  const withTokenSearch = location.search === '' ? `?${tokenSearchParam}` : `${location.search}&${tokenSearchParam}`
+  const redirectToAdminPollLink = `/polls/${props.data.slug}${withTokenSearch}`
   return (
     <Card title="Récapitulatif">
       <div className="Recap_Links">
         <div className="Recap_Link">
-        <Link className="Link Poll_Link" to={`/polls/${props.data.slug}`}>Lien vers le Poll</Link>
-        <button className={"Copy_Link" + (hasCopiedLink ? " text-green" : "")} onClick={() => { copy(`${window.location.protocol}//${location.host}/polls/${props.data.slug}`); setHasCopiedLink(true)}}>
+        <Link className="Link Poll_Link" to={redirectToPollLink}>Lien vers le Poll</Link>
+        <button className={"Copy_Link" + (hasCopiedLink ? " text-green" : "")} onClick={() => { copy(`${window.location.protocol}//${location.host}${redirectToPollLink}`); setHasCopiedLink(true)}}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-clipboard"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>  Copier
         </button>
         </div>
         <div className="Recap_Link">
-        <Link className="Link Poll_Link" to={`/polls/${props.data.slug}?t=${props.data.slugAdmin}`}>Lien vers l'aministration du Poll</Link>
-        <button className={"Copy_Link" + (hasCopiedAdminLink ? " text-green" : "")} onClick={() => { copy(`${location.protocol}//${location.host}/polls/${props.data.slug}?t=${props.data.slugAdmin}`); setHasCopiedAdminLink(true)}}>
+        <Link className="Link Poll_Link" to={redirectToAdminPollLink}>Lien vers l'aministration du Poll</Link>
+        <button className={"Copy_Link" + (hasCopiedAdminLink ? " text-green" : "")} onClick={() => { copy(`${window.location.protocol}//${location.host}${redirectToAdminPollLink}`); setHasCopiedAdminLink(true)}}>
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-clipboard"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>  Copier
         </button>
         </div>
