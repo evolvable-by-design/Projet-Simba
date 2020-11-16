@@ -39,7 +39,7 @@ paths:
                 $ref: '#/components/schemas/User'
           links:
             commentPoll:
-              operationId: commentPoll
+              operationId: createComment
               x-@relation: evolvable:rel/nextComment
               parameters:
                 userId: $response.body#/id
