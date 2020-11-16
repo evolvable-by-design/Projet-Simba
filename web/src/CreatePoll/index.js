@@ -14,6 +14,9 @@ import { useBaseUrl } from '../utils/apiVersionManager'
 import copy from 'copy-text-to-clipboard'
 import { FlatLogo } from '../Logo';
 
+import { usePivo } from '../evolvable-by-design/use-pivo';
+import { vocabulary } from '../evolvable-by-design/vocabulary';
+
 const Informations = ({next, title, location, description, setLocation, setTitle, setDescription, hasMeal, setMeal}) => {
 
   const [errorName, setErrorName] = useState(undefined)
@@ -159,7 +162,7 @@ const CreatePoll = (props) => {
 
   const [data, setData] = useState({})
 
-  const apiBaseUrl = useBaseUrl()
+  const pivo = usePivo()
 
   const createPoll = (callback) => {
     const sendChoices = choices.map((choice) => {
@@ -169,24 +172,27 @@ const CreatePoll = (props) => {
       }
     })
 
-    axios.post(`${apiBaseUrl}/polls`, {
-      title,
-      description,
-      location,
-      pollChoices: sendChoices,
-      has_meal: hasMeal,
-    }).then(res => {
-      if(res.status === 201) {
-        //props.history.push(`/polls/${res.data.slug}`)
-        setData(res.data)
-        callback()
-      }
-    }).catch(err => {
-      alert(err)
-    })
+    pivo.does(vocabulary.actions.createPoll)
+      .toPromise()
+      .then((operation) => operation.invoke({
+        [vocabulary.terms.title]: title,
+        [vocabulary.terms.description]: description,
+        [vocabulary.terms.location]: location,
+        [vocabulary.terms.pollChoices]: sendChoices,
+        [vocabulary.terms.hasMeal]: hasMeal,
+      }))
+      .then((res) => {
+        if(res.status === 201 || res.status === 200) {
+          //props.history.push(`/polls/${res.data.slug}`)
+          setData(res.rawData)
+          callback()
+        }
+      }).catch(err => {
+        alert(err)
+      })
   }
 
-  return (
+  return pivo === undefined ? <p>Loading...</p> : (
     <>
     <div className="Container">
       <FlatLogo height="50px" style={{marginBottom: "1rem"}}/>
