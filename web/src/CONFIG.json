@@ -4,7 +4,9 @@
       "base-url": "http://localhost:8080/api"
     },
     "v2": {
-      "base-url": "http://localhost:9090/api"
+      "base-url": "http://localhost:9090/api",
+      "documentation-url": "http://localhost:9090/api/documentation",
+      "documentation-verb": "GET"
     }
   }
 }

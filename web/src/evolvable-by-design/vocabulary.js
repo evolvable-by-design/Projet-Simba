@@ -20,7 +20,7 @@ export const vocabulary = {
     icsurl: `${evolvable}icsurl`,
     username: `${evolvable}username`,
     location: `${evolvable}pollLocation`,
-    has_meal: `${evolvable}has_meal`,
+    hasMeal: `${evolvable}has_meal`,
     endDate: `${schema}endDate`,
     startDate: `${schema}startDate`,
     users: `${evolvable}users`,

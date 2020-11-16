@@ -11,8 +11,8 @@ export function usePivo() {
   useEffect(() => {
     const apiConfig = CONFIG.api[`v${apiVersion}`]
     Pivo.fetchDocumentationAndCreate(
-      apiConfig['base-url'],
-      'OPTIONS'
+      apiConfig['documentation-url'] || apiConfig['base-url'],
+      apiConfig['documentation-verb'] || 'OPTIONS'
     )
     .then(newPivoInstance => {
       setPivo(newPivoInstance)
