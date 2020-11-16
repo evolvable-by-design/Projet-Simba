@@ -13,10 +13,14 @@ import { useBaseUrl } from '../utils/apiVersionManager'
 import Card from '../Card';
 import './Poll.css';
 
+import { usePivo } from '../evolvable-by-design/use-pivo';
+import { vocabulary } from '../evolvable-by-design/vocabulary';
+import { executeProcess } from '../evolvable-by-design/utils';
+
 moment.locale('fr');
 const localizer = BigCalendar.momentLocalizer(moment)
 
-const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, username, setUsername, listMealPreferences, setListMealPreferences}) => {
+const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, username, setUsername, listMealPreferences, setListMealPreferences, semanticPoll}) => {
   const [choices, setChoices] = useState([])
   const [view, setView] = useState(0)
   const [usernameError, setUsernameError] = useState(false)
@@ -165,18 +169,18 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
           </>
         }
       </Card>
-      <PollInfo data={data} listMealPreferences={listMealPreferences} username={username} setUsername={setUsername} slug={slug} />
+      <PollInfo data={data} semanticPoll={semanticPoll} listMealPreferences={listMealPreferences} username={username} setUsername={setUsername} slug={slug} />
     </>
   )
 }
 
-const PollInfo = ({data, listMealPreferences, username, setUsername, slug}) => {
+const PollInfo = ({data, listMealPreferences, username, setUsername, slug, semanticPoll}) => {
   return (
     <div className="Poll_Informations">
       { data.has_meal && listMealPreferences.length > 0 &&
         <MealPreferences mealPreferences={listMealPreferences}/>
       }
-      <Comments data={data.pollComments} username={username} setUsername={setUsername} slug={slug} />
+      <Comments semanticPoll={semanticPoll} data={data.pollComments} username={username} setUsername={setUsername} slug={slug} />
     </div>
   )
 }
@@ -329,12 +333,10 @@ const MealPreferences = ({mealPreferences}) => {
   )
 }
 
-const Comments = ({data, username, setUsername, slug}) => {
+const Comments = ({data, username, setUsername, slug, semanticPoll}) => {
 
   const [comments, setComments] = useState(data)
   const [comment, setComment] = useState("")
-
-  const apiBaseUrl = useBaseUrl()
 
   if(!comments) {
     return (
@@ -345,27 +347,38 @@ const Comments = ({data, username, setUsername, slug}) => {
   }
 
   const createComment = () => {
-    axios.post(`${apiBaseUrl}/users`, {
-      username,
-    })
-      .then((res) => {
-        let {id:  userId} = res.data
-        axios.post(`${apiBaseUrl}/polls/${slug}/comments/${userId}`, {content: comment})
-          .then(res => {
-            setComment("")
-            setComments([
-              ...comments,
-              res.data
-            ])
-          })
-          .catch(err => {
-            console.error(err)
-          })
+    const commentParams = {
+      [vocabulary.terms.slug]: slug,
+      [vocabulary.terms.content]: comment,
+      [vocabulary.terms.username]: username,
+    }
 
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    executeProcess(
+      semanticPoll,
+      vocabulary.relations.comment,
+      vocabulary.relations.nextComment,
+      commentParams
+    ).then(res => {
+      console.log(res)
+      return res
+    })
+    .then(res =>
+      Promise.all([
+        res.getOneValue(vocabulary.terms.id).then(value => (['id', value])),
+        res.getOneValue(vocabulary.terms.username).then(value => (['username', value])),
+        res.getOneValue(vocabulary.terms.content).then(value => (['content', value])),
+      ]).then(values => values.reduce((acc, [key, value]) => { acc[key] = value; return acc; }, {}))
+    ).then(comm => ({ id: comm.id, content: comm.content, user: { username: comm.username } })
+    ).then(newComment => {
+      setComment("")
+      setComments([
+        ...comments,
+        newComment
+      ])
+    })
+    .catch(err => {
+      console.error(err)
+    })
   }
 
   const handleChange = (e) => {
@@ -401,22 +414,29 @@ const Poll = (props) => {
 
   const {slug} = props.match.params
   const [data, setData] = useState(false)
+  const [semanticPoll, setSemanticPoll] = useState()
   const [isModalOpened, setIsModalOpened] = useState(false)
   const [users, setUsers] = useState(false)
   const [username, setUsername] = useState("")
   const [listMealPreferences, setListMealPreferences] = useState([])
 
   const apiBaseUrl = useBaseUrl()
+  const pivo = usePivo()
 
-  const refreshDataAndUsers = () => {
-    axios.get(`${apiBaseUrl}/polls/${slug}`)
-    .then(res => {
-      setData(res.data)
-      setListMealPreferences(res.data.pollMealPreferences)
-    })
-    .catch((err) => {
-      props.history.push('/')
-    })
+  const refreshDataAndUsers = async () => {
+    if (pivo !== undefined) {
+      try {
+        const getPollOperation = await pivo.get(vocabulary.types.Poll).toPromise()
+        const res = await getPollOperation.invoke({
+          [vocabulary.terms.slug]: slug,
+        })
+        setData(res.rawData)
+        setSemanticPoll(res.data)
+      } catch (err) {
+        console.error(err)
+        props.history.push('/')
+      }
+    }
 
     axios.get(`${apiBaseUrl}/polls/${slug}/users`)
     .then((res) => {
@@ -429,13 +449,13 @@ const Poll = (props) => {
 
   useEffect(()=>{
     refreshDataAndUsers()
-  },[slug])
+  },[slug, pivo])
 
   const openExportModal = () => {
     setIsModalOpened(true)
   }
 
-  return (
+  return pivo === undefined ? <p>Loading...</p> : (
     <div className="Container">
 
       { isModalOpened &&
@@ -488,7 +508,8 @@ const Poll = (props) => {
       <Informations 
         adminToken={token} 
         slug={slug} 
-        data={data} 
+        data={data}
+        semanticPoll={semanticPoll}
         users={users} 
         refreshDataAndUsers={refreshDataAndUsers}
         username={username}
