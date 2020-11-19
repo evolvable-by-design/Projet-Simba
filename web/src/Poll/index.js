@@ -60,22 +60,32 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
       return
     }
 
+    const voteParams = {
+      [vocabulary.terms.username]: username,
+      [vocabulary.terms.slug]: slug,
+      [vocabulary.terms.choices]: choices
+    }
+
+    executeProcess(
+      semanticPoll,
+      vocabulary.relations.vote,
+      vocabulary.relations.nextVote,
+      voteParams
+    ).then(() => {
+      refreshDataAndUsers()
+      setUsername("")
+      setChoices([])
+      setMealPreferences("")
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+
     axios.post(`${apiBaseUrl}/users`, {
       username,
     })
       .then((res) => {
         let {id:  userId} = res.data
-
-        axios.post(`${apiBaseUrl}/polls/${slug}/vote/${userId}`, {choices})
-          .then((voteRes) => {
-            refreshDataAndUsers()
-            setUsername("")
-            setChoices([])
-            setMealPreferences("")
-          })
-          .catch((err) => {
-            console.log(err)
-          })
 
         if(mealPreferences.trim() !== "") {
           axios.post(`${apiBaseUrl}/polls/${slug}/mealpreference/${userId}`, {content: mealPreferences})
@@ -426,10 +436,11 @@ const Poll = (props) => {
   const refreshDataAndUsers = async () => {
     if (pivo !== undefined) {
       try {
-        const getPollOperation = await pivo.get(vocabulary.types.Poll).toPromise()
-        const res = await getPollOperation.invoke({
+        const params = {
           [vocabulary.terms.slug]: slug,
-        })
+        }
+        const getPollOperation = await pivo.get(vocabulary.types.Poll, Object.keys(params)).toPromise()
+        const res = await getPollOperation.invoke(params)
         setData(res.rawData)
         setSemanticPoll(res.data)
       } catch (err) {
@@ -439,12 +450,12 @@ const Poll = (props) => {
     }
 
     axios.get(`${apiBaseUrl}/polls/${slug}/users`)
-    .then((res) => {
-      setUsers(res.data)
-    })
-    .catch((err) => {
-      console.error(err)
-    })
+      .then((res) => {
+        setUsers(res.data)
+      })
+      .catch((err) => {
+        console.error(err)
+      })
   }
 
   useEffect(()=>{
