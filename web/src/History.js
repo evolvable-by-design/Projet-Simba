@@ -17,6 +17,7 @@ function preserveQueryParameters(history, preserve, location) {
           Object.assign(preservedQuery, queryString.parse(location.search));
       }
       location.search = queryString.stringify(preservedQuery);
+      location.pathname = location.pathname.split('?')[0]
   }
   return location;
 }
