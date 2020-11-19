@@ -16,9 +16,10 @@ import { FlatLogo } from '../Logo';
 
 import { usePivo } from '../evolvable-by-design/use-pivo';
 import { vocabulary } from '../evolvable-by-design/vocabulary';
+import { useMealPreference } from '../evolvable-by-design/use-meal-preference';
 
 const Informations = ({next, title, location, description, setLocation, setTitle, setDescription, hasMeal, setMeal}) => {
-
+  const { isMealPrefFeatureAvailable } = useMealPreference()
   const [errorName, setErrorName] = useState(undefined)
 
   const checkInputs = () => {
@@ -57,13 +58,15 @@ const Informations = ({next, title, location, description, setLocation, setTitle
           <textarea placeholder="Description" onChange={(e)=>setDescription(e.target.value)} value={description}>
           </textarea>
         </div>
-        <div className="CreatePoll_Input CreatePoll_Switch">
-          <span>Cet événement contient un repas :</span>
-          <label className="switch" htmlFor="hasMeal">
-            <input id="hasMeal" type="checkbox" checked={hasMeal} onChange={(e) => setMeal(e.target.checked)} value="Doit-on inclure un repas ?"/>
-            <div className="slider round"></div>
-          </label>
-        </div>
+        { isMealPrefFeatureAvailable &&
+          <div className="CreatePoll_Input CreatePoll_Switch">
+            <span>Cet événement contient un repas :</span>
+            <label className="switch" htmlFor="hasMeal">
+              <input id="hasMeal" type="checkbox" checked={hasMeal} onChange={(e) => setMeal(e.target.checked)} value="Doit-on inclure un repas ?"/>
+              <div className="slider round"></div>
+            </label>
+          </div>
+        }
       </div>
     </Card>
   )

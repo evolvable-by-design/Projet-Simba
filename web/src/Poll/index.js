@@ -16,6 +16,7 @@ import './Poll.css';
 import { usePivo } from '../evolvable-by-design/use-pivo';
 import { vocabulary } from '../evolvable-by-design/vocabulary';
 import { executeProcess } from '../evolvable-by-design/utils';
+import { useMealPreference } from '../evolvable-by-design/use-meal-preference';
 
 moment.locale('fr');
 const localizer = BigCalendar.momentLocalizer(moment)
@@ -28,6 +29,7 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
   const [mealPreferences, setMealPreferences] = useState("")
 
   const apiBaseUrl = useBaseUrl()
+  const { isMealPrefFeatureAvailable } = useMealPreference()
 
   if(!data) {
     return <>Loading...</>
@@ -164,7 +166,7 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
           }
 
         </div>  
-        { data.has_meal && 
+        { isMealPrefFeatureAvailable && data.has_meal && 
           <>
             <div className="Meal_Preferences_Toggle">
               <span>Avez-vous des préférences alimentaires particulières ?</span>
@@ -185,9 +187,10 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
 }
 
 const PollInfo = ({data, listMealPreferences, username, setUsername, slug, semanticPoll}) => {
+  const { isMealPrefFeatureAvailable } = useMealPreference()
   return (
     <div className="Poll_Informations">
-      { data.has_meal && listMealPreferences.length > 0 &&
+      { isMealPrefFeatureAvailable && data.has_meal && listMealPreferences.length > 0 &&
         <MealPreferences mealPreferences={listMealPreferences}/>
       }
       <Comments semanticPoll={semanticPoll} data={data.pollComments} username={username} setUsername={setUsername} slug={slug} />
