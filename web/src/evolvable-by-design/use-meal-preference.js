@@ -11,7 +11,9 @@ export function useMealPreference () {
     if (pivo !== undefined) {
       const maybeOperation = pivo.get(
         vocabulary.types.MealPreferences,
-        [ vocabulary.terms.slug ]
+        {
+          withParameters: [ vocabulary.terms.slug ]
+        }
       ).getOrUndefined()
 
       setGetPollMealPreferences(maybeOperation)
