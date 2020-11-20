@@ -134,6 +134,10 @@ paths:
               operationId: createUser
               x-@relation: evolvable:rel/vote
               x-affiliation: parent
+            update:
+              operationId: updatePoll
+              x-@relation: evolvable:rel/update
+              x-affiliation: parent
             addChoice:
               operationId: createChoices
               x-@relation: evolvable:rel/addChoice
