@@ -9,7 +9,7 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import { Informations } from '../CreatePoll';
 import { CALENDAR_MESSAGES } from '../utils/constants'
-import { useBaseUrl } from '../utils/apiVersionManager'
+import { useApiVersion, useBaseUrl } from '../utils/apiVersionManager'
 import 'moment/locale/fr'
 import Card from '../Card';
 import { usePivo } from '../evolvable-by-design/use-pivo';
@@ -121,7 +121,7 @@ const EditPoll = (props) => {
   }
 
 
-  
+  const [data, setData] = useState()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
@@ -134,6 +134,7 @@ const EditPoll = (props) => {
   const [deletedChoices, setDeletedChoices] = useState([])
 
   const apiBaseUrl = useBaseUrl()
+  const apiVersion = useApiVersion()
   const pivo = usePivo()
 
   useEffect(() => {
@@ -159,6 +160,7 @@ const EditPoll = (props) => {
           props.history.push(`/polls/${slug}`)
         }
 
+        setData(data)
         setTitle(data.title)
         setDescription(data.description)
         setLocation(data.location)
@@ -182,72 +184,107 @@ const EditPoll = (props) => {
   }, [slug, pivo])
 
   const editPoll = () => {
-    let requests = []
+    function editAndGetPollChoices (apiVersion) {
+      if (apiVersion === '1') {
+        let requests = []
+        
+        requests.push(axios.put(`${apiBaseUrl}/polls/${slug}?token=${token}`, {
+          title,
+          location,
+          description,
+          has_meal: hasMeal,
+          pollChoices: [],
+        }))
 
-    requests.push(axios.put(`${apiBaseUrl}/polls/${slug}?token=${token}`, {
-        title,
-        location,
-        description,
-        has_meal: hasMeal,
-        pollChoices: [],
-      }))
+        const initialChoicesDic = {}
+        initialChoices.forEach(choice => initialChoicesDic[choice.resource] = choice)
 
-      const initialChoicesDic = {}
-      initialChoices.forEach(choice => initialChoicesDic[choice.resource] = choice)
-
-      const initialIds = initialChoices.map(choice => choice.resource)
-     
-
-      choices.forEach(choice => {
-        if(choice.resource !== undefined) {
-          let initChoice = initialChoicesDic[choice.resource]
-          console.log(initChoice)
-          console.log(choice)
-          if(initChoice.start !== choice.start || initChoice.end !== choice.end) {
-            requests.push(axios.put(`${apiBaseUrl}/polls/${slug}/choices/${choice.resource}?token=${token}`, {
-              startDate: choice.start,
-              endDate: choice.end,
-            }))
-          }
-        }
-      })
-
-      let choiceIds = choices.map(choice => choice.resource)
-      choiceIds = choiceIds.filter(choice => choice !== undefined)
-      let deletedIds = []
-    
-      initialIds.forEach(id => {
-        if(choiceIds.indexOf(id) === -1) {
-          deletedIds.push(id)
-        }
-      })
-
-      if(deletedIds.length !== 0) {
-        requests.push(axios.delete(`${apiBaseUrl}/polls/${slug}/choices/?token=${token}`, { data: { choices: deletedIds}}))
-      }
-
-
-      const createdChoices = choices.filter(choice => (choice.resource === undefined))
-      const createdChoicesFormatted = createdChoices.map((choice) => {
-        return {
-          startDate: choice.start,
-          endDate: choice.end,
-          name: choice.name
-        }
-      })
-
-      if(createdChoicesFormatted.length !== 0) {
-        requests.push(axios.post(`${apiBaseUrl}/polls/${slug}/choices?token=${token}`, createdChoicesFormatted))
-      }  
-
+        const initialIds = initialChoices.map(choice => choice.resource)
       
-      Promise.all(requests)
-      .then((v) => {
-        props.history.push(`/polls/${slug}?t=${token}`)
-      })
-      .catch(err => {
-        console.error(err)
-      })
+
+        choices.forEach(choice => {
+          if(choice.resource !== undefined) {
+            let initChoice = initialChoicesDic[choice.resource]
+            console.log(initChoice)
+            console.log(choice)
+            if(initChoice.start !== choice.start || initChoice.end !== choice.end) {
+              requests.push(axios.put(`${apiBaseUrl}/polls/${slug}/choices/${choice.resource}?token=${token}`, {
+                startDate: choice.start,
+                endDate: choice.end,
+              }))
+            }
+          }
+        })
+
+        let choiceIds = choices.map(choice => choice.resource)
+        choiceIds = choiceIds.filter(choice => choice !== undefined)
+        let deletedIds = []
+      
+        initialIds.forEach(id => {
+          if(choiceIds.indexOf(id) === -1) {
+            deletedIds.push(id)
+          }
+        })
+
+        if(deletedIds.length !== 0) {
+          requests.push(axios.delete(`${apiBaseUrl}/polls/${slug}/choices/?token=${token}`, { data: { choices: deletedIds}}))
+        }
+
+
+        const createdChoices = choices.filter(choice => (choice.resource === undefined))
+        const createdChoicesFormatted = createdChoices.map((choice) => {
+          return {
+            startDate: choice.start,
+            endDate: choice.end,
+            name: choice.name
+          }
+        })
+
+        if(createdChoicesFormatted.length !== 0) {
+          requests.push(axios.post(`${apiBaseUrl}/polls/${slug}/choices?token=${token}`, createdChoicesFormatted))
+        }  
+
+        
+        Promise.all(requests)
+        .then((v) => {
+          props.history.push(`/polls/${slug}?t=${token}`)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+
+        return undefined
+      } else if (apiVersion === '2') {
+        const findChoice = (id) => data.pollChoices.find(ch => ch.id === id)
+
+        const newChoices = choices.map(c => ({
+          ...findChoice(c.resource),
+          startDate: c.start,
+          endDate: c.end
+        }))
+
+        axios.put(`${apiBaseUrl}/poll/update1`, {
+          ...data,
+          slugAdmin: token,
+          title,
+          location,
+          has_meal: hasMeal,
+          pollChoices: newChoices,
+        })
+        .then(() => {
+          props.history.push(`/polls/${slug}?t=${token}`)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+
+        return newChoices
+      } else {
+        return undefined
+      }
+    }
+
+    editAndGetPollChoices(apiVersion)
   }
 
   return pivo === undefined ? <p>Loading...</p> : (
