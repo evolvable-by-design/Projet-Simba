@@ -17,6 +17,7 @@ public interface HypermediaControlsManager {
     return HypermediaRepresentation.of(poll)
       .withLink("comment")
       .withLink("vote")
+      .withLink("update")
       .withLink("addChoice")
       .withLink("deleteChoice")
       .withLink("updateChoice")
