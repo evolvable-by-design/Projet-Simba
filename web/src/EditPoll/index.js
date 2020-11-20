@@ -12,6 +12,8 @@ import { CALENDAR_MESSAGES } from '../utils/constants'
 import { useBaseUrl } from '../utils/apiVersionManager'
 import 'moment/locale/fr'
 import Card from '../Card';
+import { usePivo } from '../evolvable-by-design/use-pivo';
+import { vocabulary } from '../evolvable-by-design/vocabulary'
 
 moment.locale('fr');
 const localizer = BigCalendar.momentLocalizer(moment)
@@ -132,36 +134,52 @@ const EditPoll = (props) => {
   const [deletedChoices, setDeletedChoices] = useState([])
 
   const apiBaseUrl = useBaseUrl()
+  const pivo = usePivo()
 
   useEffect(() => {
-    axios.get(`${apiBaseUrl}/polls/${slug}`)
-    .then(res => {
-      const data = res.data
-
-      if(data.slugAdmin !== token) {
-        props.history.push(`/polls/${slug}`)
+    if (pivo !== undefined) {
+      const getPollParams = {
+        [vocabulary.terms.token]: token,
+        [vocabulary.terms.slug]: slug
       }
 
-      setTitle(data.title)
-      setDescription(data.description)
-      setLocation(data.location)
-      setMeal(data.has_meal)
-
-      const newChoices = data.pollChoices.map(choice => {
-        return {
-          title: "",
-          start: new Date(choice.startDate),
-          end: new Date(choice.endDate),
-          resource: choice.id,
+      pivo.get(
+        vocabulary.types.Poll,
+        {
+          withParameters: Object.keys(getPollParams),
+          requiredReturnedFields: [ vocabulary.terms.adminSlug ]
         }
+      )
+      .toPromise()
+      .then(operation => operation.invoke(getPollParams))
+      .then(res => {
+        const data = res.rawData
+
+        if(data.slugAdmin !== token) {
+          props.history.push(`/polls/${slug}`)
+        }
+
+        setTitle(data.title)
+        setDescription(data.description)
+        setLocation(data.location)
+        setMeal(data.has_meal)
+
+        const newChoices = data.pollChoices.map(choice => {
+          return {
+            title: "",
+            start: new Date(choice.startDate),
+            end: new Date(choice.endDate),
+            resource: choice.id,
+          }
+        })
+        setChoices(newChoices)
+        setInitialChoices(newChoices)
       })
-      setChoices(newChoices)
-      setInitialChoices(newChoices)
-    })
-    .catch((err) => {
-      props.history.push('/')
-    })
-  }, [slug])
+      .catch((err) => {
+        props.history.push('/')
+      })
+    }
+  }, [slug, pivo])
 
   const editPoll = () => {
     let requests = []
@@ -232,7 +250,7 @@ const EditPoll = (props) => {
       })
   }
 
-  return (
+  return pivo === undefined ? <p>Loading...</p> : (
     <>
       <div className="Container">
         <h1>

@@ -442,7 +442,13 @@ const Poll = (props) => {
         const params = {
           [vocabulary.terms.slug]: slug,
         }
-        const getPollOperation = await pivo.get(vocabulary.types.Poll, Object.keys(params)).toPromise()
+        if (token !== undefined) {
+          params[vocabulary.terms.token] = token
+        }
+        const getPollOperation = await pivo.get(
+          vocabulary.types.Poll,
+          { withParameters: Object.keys(params) }
+        ).toPromise()
         const res = await getPollOperation.invoke(params)
         setData(res.rawData)
         setSemanticPoll(res.data)
