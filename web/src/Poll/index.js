@@ -188,12 +188,30 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
 
 const PollInfo = ({data, listMealPreferences, username, setUsername, slug, semanticPoll}) => {
   const { isMealPrefFeatureAvailable } = useMealPreference()
+  const [comments, setComments] = useState()
+
+  useEffect(() => {
+    if (semanticPoll) {
+      semanticPoll.getArray(vocabulary.terms.pollComments).then(comments =>
+        Promise.all(comments.map(comment =>
+          Promise.all([
+            comment.getOneValue(vocabulary.terms.id).then(value => (['id', value])),
+            comment.getOneValue(vocabulary.terms.username).then(value => (['username', value])),
+            comment.getOneValue(vocabulary.terms.content).then(value => (['content', value])),
+          ])
+          .then(values => values.reduce((acc, [key, value]) => { acc[key] = value; return acc; }, {}))
+          .then(comm => ({ id: comm.id, content: comm.content, user: { username: comm.username } })
+        ))).then(setComments)
+      )
+    }
+  }, [semanticPoll])
+
   return (
     <div className="Poll_Informations">
       { isMealPrefFeatureAvailable && data.has_meal && listMealPreferences.length > 0 &&
         <MealPreferences mealPreferences={listMealPreferences}/>
       }
-      <Comments semanticPoll={semanticPoll} data={data.pollComments} username={username} setUsername={setUsername} slug={slug} />
+      { comments && <Comments semanticPoll={semanticPoll} data={comments} username={username} setUsername={setUsername} slug={slug} />}
     </div>
   )
 }
