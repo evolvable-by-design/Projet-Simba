@@ -122,6 +122,7 @@ const EditPoll = (props) => {
 
 
   const [data, setData] = useState()
+  const [semanticPollData, setSemanticPollData] = useState()
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
@@ -161,6 +162,7 @@ const EditPoll = (props) => {
         }
 
         setData(data)
+        setSemanticPollData(res.data)
         setTitle(data.title)
         setDescription(data.description)
         setLocation(data.location)
@@ -188,13 +190,6 @@ const EditPoll = (props) => {
       if (apiVersion === '1') {
         let requests = []
         
-        requests.push(axios.put(`${apiBaseUrl}/polls/${slug}?token=${token}`, {
-          title,
-          location,
-          description,
-          has_meal: hasMeal,
-          pollChoices: [],
-        }))
 
         const initialChoicesDic = {}
         initialChoices.forEach(choice => initialChoicesDic[choice.resource] = choice)
@@ -263,28 +258,32 @@ const EditPoll = (props) => {
           endDate: c.end
         }))
 
-        axios.put(`${apiBaseUrl}/poll/update1`, {
-          ...data,
-          slugAdmin: token,
-          title,
-          location,
-          has_meal: hasMeal,
-          pollChoices: newChoices,
-        })
-        .then(() => {
-          props.history.push(`/polls/${slug}?t=${token}`)
-        })
-        .catch(err => {
-          console.error(err)
-        })
-
         return newChoices
       } else {
         return undefined
       }
     }
 
-    editAndGetPollChoices(apiVersion)
+    if (pivo !== undefined && semanticPollData !== undefined) {
+      const newChoices = editAndGetPollChoices(apiVersion)
+
+      semanticPollData.getRelation(vocabulary.relations.update, 1).toPromise()
+        .then(updateOperation => updateOperation.operation.invoke({
+          ...data,
+          [vocabulary.terms.token]: token,
+          [vocabulary.terms.title]: title,
+          [vocabulary.terms.description]: description,
+          [vocabulary.terms.location]: location,
+          [vocabulary.terms.hasMeal]: hasMeal,
+          [vocabulary.terms.pollChoices]: newChoices
+        }))
+        .then(() => { 
+            props.history.push(`/polls/${slug}?t=${token}`)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    }
   }
 
   return pivo === undefined ? <p>Loading...</p> : (

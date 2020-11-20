@@ -442,7 +442,7 @@ const Poll = (props) => {
         const params = {
           [vocabulary.terms.slug]: slug,
         }
-        if (token !== undefined) {
+        if (token !== undefined && token !== null) {
           params[vocabulary.terms.token] = token
         }
         const getPollOperation = await pivo.get(
