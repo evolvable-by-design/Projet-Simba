@@ -13,8 +13,9 @@ function preserveQueryParameters(history, preserve, location) {
               preservedQuery[p] = v;
           }
       }
-      if (location.search) {
-          Object.assign(preservedQuery, queryString.parse(location.search));
+      const search = location.search || location.pathname.split('?')[1]
+      if (search) {
+          Object.assign(preservedQuery, queryString.parse('?' + search));
       }
       location.search = queryString.stringify(preservedQuery);
       location.pathname = location.pathname.split('?')[0]
