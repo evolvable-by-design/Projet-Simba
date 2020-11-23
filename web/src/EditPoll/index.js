@@ -164,12 +164,22 @@ const EditPoll = (props) => {
   const editPoll = () => {
     let requests = []
 
-    requests.push(axios.put(`${BASE_URL}/polls/${slug}?token=${token}`, {
+    const findChoice = (id) => data.pollChoices.find(ch => ch.id === id)
+
+    const newChoices = choices.map(c => ({
+      ...findChoice(c.resource),
+      startDate: c.start,
+      endDate: c.end
+    }))
+
+    requests.push(axios.put(`${BASE_URL}/poll/update1`, {
         title,
         location,
         description,
+        slug,
         has_meal: hasMeal,
-        pollChoices: [],
+        pollChoices: newChoices,
+        slugAdmin: token,
       }))
 
       const initialChoicesDic = {}
