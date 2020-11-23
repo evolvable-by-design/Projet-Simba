@@ -13,7 +13,7 @@ import {BASE_URL, CALENDAR_MESSAGES} from '../utils/constants'
 import copy from 'copy-text-to-clipboard'
 import { FlatLogo } from '../Logo';
 
-const Informations = ({next, title, location, description, setLocation, setTitle, setDescription, hasMeal, setMeal}) => {
+const Informations = ({next, title, location, description, setLocation, setTitle, setDescription}) => {
 
   const [errorName, setErrorName] = useState(undefined)
 
@@ -52,13 +52,6 @@ const Informations = ({next, title, location, description, setLocation, setTitle
         <div className="CreatePoll_Input">
           <textarea placeholder="Description" onChange={(e)=>setDescription(e.target.value)} value={description}>
           </textarea>
-        </div>
-        <div className="CreatePoll_Input CreatePoll_Switch">
-          <span>Cet événement contient un repas :</span>
-          <label className="switch" htmlFor="hasMeal">
-            <input id="hasMeal" type="checkbox" checked={hasMeal} onChange={(e) => setMeal(e.target.checked)} value="Doit-on inclure un repas ?"/>
-            <div className="slider round"></div>
-          </label>
         </div>
       </div>
     </Card>
@@ -152,7 +145,6 @@ const CreatePoll = (props) => {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
-  const [hasMeal, setMeal] = useState(false)
 
   const [choices, setChoices] = useState([])
 
@@ -171,7 +163,7 @@ const CreatePoll = (props) => {
       description,
       location,
       pollChoices: sendChoices,
-      has_meal: hasMeal,
+      has_meal: false,
     }).then(res => {
       if(res.status === 201) {
         //props.history.push(`/polls/${res.data.slug}`)
@@ -192,7 +184,7 @@ const CreatePoll = (props) => {
         <Step
           id="informations"
           render={({ next }) => (
-            <Informations next={next} title={title} location={location} description={description} setDescription={setDescription} setLocation={setLocation} setTitle={setTitle} hasMeal={hasMeal} setMeal={setMeal}/>
+            <Informations next={next} title={title} location={location} description={description} setDescription={setDescription} setLocation={setLocation} setTitle={setTitle}/>
           )}
         />
         <Step
