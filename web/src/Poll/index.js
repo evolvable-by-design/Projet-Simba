@@ -336,9 +336,14 @@ const Poll = (props) => {
       ? axios.get(`${BASE_URL}/poll/aslug/${token}`)
       : axios.get(`${BASE_URL}/poll/slug/${slug}`)
 
-    apiCall
-    .then(res => {
-      setData(res.data)
+    Promise.all(
+      apiCall,
+      axios.get(`${BASE_URL}/poll/polls/${slug}/comments`)
+    ).then(([ newPollResponse, commentsResponse ]) => {
+      setData({
+        ...newPollResponse.data,
+        pollComments: commentsResponse.data
+      })
     })
     .catch((err) => {
       props.history.push('/')
