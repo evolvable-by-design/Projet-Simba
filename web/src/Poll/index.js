@@ -340,23 +340,21 @@ const Comments = ({data, username, setUsername, slug}) => {
   }
 
   const createComment = () => {
-    axios.post(`${BASE_URL}/users`, {
-      username,
-    })
-      .then((res) => {
-        let {id:  userId} = res.data
-        axios.post(`${BASE_URL}/polls/${slug}/comments/${userId}`, {content: comment})
-          .then(res => {
-            setComment("")
-            setComments([
-              ...comments,
-              res.data
-            ])
-          })
-          .catch(err => {
-            console.error(err)
-          })
-
+    axios.post(`${BASE_URL}/poll/comment/${slug}`, {content: comment, auteur: username})
+      .then(res => (
+        {
+          content: res.data.content,
+          user: {
+            username: res.data.content
+          }
+        }
+      ))
+      .then(newComment => {
+        setComment("")
+        setComments([
+          ...comments,
+          newComment
+        ])
       })
       .catch(err => {
         console.error(err)
