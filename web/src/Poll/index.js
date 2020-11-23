@@ -332,7 +332,11 @@ const Poll = (props) => {
   const [username, setUsername] = useState("")
 
   const refreshDataAndUsers = () => {
-    axios.get(`${BASE_URL}/polls/${slug}`)
+    const apiCall = token !== undefined
+      ? axios.get(`${BASE_URL}/poll/aslug/${token}`)
+      : axios.get(`${BASE_URL}/poll/slug/${slug}`)
+
+    apiCall
     .then(res => {
       setData(res.data)
     })

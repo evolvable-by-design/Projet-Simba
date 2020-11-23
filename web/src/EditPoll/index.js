@@ -132,7 +132,7 @@ const EditPoll = (props) => {
 
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/polls/${slug}`)
+    axios.get(`${BASE_URL}/poll/aslug/${slugAdmin}`)
     .then(res => {
       const data = res.data
 
