@@ -163,11 +163,10 @@ const CreatePoll = (props) => {
       return {
         startDate: choice.start,
         endDate: choice.end,
-        name: choice.name
       }
     })
 
-    axios.post(`${BASE_URL}/polls`, {
+    axios.post(`${BASE_URL}/poll`, {
       title,
       description,
       location,
