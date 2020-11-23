@@ -53,39 +53,21 @@ const Informations = ({adminToken, slug, data, users, refreshDataAndUsers, usern
       return
     }
 
-    axios.post(`${BASE_URL}/users`, {
-      username,
+    axios.post(
+      `${BASE_URL}/poll/choiceuser`,
+      {
+        choices,
+        username
+      }
+    ).then((voteRes) => {
+      refreshDataAndUsers()
+      setUsername("")
+      setChoices([])
+      setMealPreferences("")
     })
-      .then((res) => {
-        let {id:  userId} = res.data
-
-        axios.post(`${BASE_URL}/polls/${slug}/vote/${userId}`, {choices})
-          .then((voteRes) => {
-            refreshDataAndUsers()
-            setUsername("")
-            setChoices([])
-            setMealPreferences("")
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-
-        if(mealPreferences.trim() !== "") {
-          axios.post(`${BASE_URL}/polls/${slug}/mealpreference/${userId}`, {content: mealPreferences})
-            .then(res => {
-              setListMealPreferences([
-                ...listMealPreferences,
-                {...res.data}
-              ])
-            })
-        }
-
-      })
-      .catch((err) => {
-        console.log(`Erreur lors de la création d'user ${err}`)
-      })
-
-
+    .catch((err) => {
+      console.log(err)
+    })
   }
 
   const footer = (
